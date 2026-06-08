@@ -1,0 +1,1393 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>حياتي - مدير الأمور المالية والمهام</title>
+<meta name="application-name" content="حياتي">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="حياتي">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0D7A5F">
+<link rel="manifest" id="pwa-manifest">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg-page:#F0F2F5;--bg-card:#FFFFFF;--bg-surf:#F7F8FA;--bg-inp:#F0F2F5;
+  --txt1:#1A1C20;--txt2:#52576B;--txt3:#9297A8;
+  --brd:#E2E5EC;--brd2:#CDD0DB;
+  --acc:#0D7A5F;--acc-lt:#E6F5F0;--acc-txt:#074D3B;
+  --red:#C0392B;--red-lt:#FDECEA;--red-txt:#7B1A12;
+  --amb:#9A5E00;--amb-lt:#FEF3E2;--amb-txt:#6B3E00;
+  --blu:#1557A0;--blu-lt:#E8F1FB;--blu-txt:#0C3D72;
+  --prp:#4A3FAD;--prp-lt:#EEEDFB;--prp-txt:#2E2580;
+  --grn:#2E7D32;--grn-lt:#EBF5EB;--grn-txt:#1B5E20;
+  --inc-col:#0D7A5F;--exp-col:#C0392B;
+}
+body.dark{
+  --bg-page:#12141A;--bg-card:#1E2028;--bg-surf:#272A34;--bg-inp:#2C2F3C;
+  --txt1:#ECEEF4;--txt2:#9298B0;--txt3:#5C6178;
+  --brd:#2E3244;--brd2:#3A3F58;
+  --acc:#1DB888;--acc-lt:#0B2E22;--acc-txt:#5DE0B0;
+  --red:#E55A50;--red-lt:#2A1210;--red-txt:#F5948E;
+  --amb:#E09030;--amb-lt:#2A1E08;--amb-txt:#F5C070;
+  --blu:#4A9EE8;--blu-lt:#0A1E30;--blu-txt:#88C4F5;
+  --prp:#8880E8;--prp-lt:#1A1830;--prp-txt:#B8B4F8;
+  --grn:#4CAF50;--grn-lt:#0F2210;--grn-txt:#88D48C;
+  --inc-col:#1DB888;--exp-col:#E55A50;
+}
+body{background:var(--bg-page);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Tahoma,sans-serif;font-size:14px;color:var(--txt1);max-width:430px;margin:0 auto;min-height:100vh;transition:background .3s,color .3s;}
+
+/* LOGIN PAGE */
+#login-page{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:32px 24px;background:var(--bg-page);}
+.login-logo{width:80px;height:80px;background:var(--acc);border-radius:24px;display:flex;align-items:center;justify-content:center;font-size:40px;margin-bottom:24px;box-shadow:0 8px 24px rgba(13,122,95,.3);}
+.login-title{font-size:26px;font-weight:700;color:var(--txt1);margin-bottom:6px;}
+.login-sub{font-size:14px;color:var(--txt3);margin-bottom:36px;text-align:center;}
+.login-card{background:var(--bg-card);border-radius:20px;border:1px solid var(--brd);padding:28px 24px;width:100%;max-width:360px;}
+.login-label{font-size:13px;font-weight:600;color:var(--txt2);margin-bottom:8px;display:block;}
+.login-input{width:100%;padding:13px 15px;border-radius:12px;border:1.5px solid var(--brd2);background:var(--bg-inp);font-size:15px;color:var(--txt1);outline:none;font-family:inherit;letter-spacing:2px;}
+.login-input:focus{border-color:var(--acc);}
+.login-btn{width:100%;padding:14px;border-radius:12px;border:none;background:var(--acc);color:#fff;font-size:16px;font-weight:700;cursor:pointer;margin-top:16px;font-family:inherit;transition:opacity .2s;}
+.login-btn:hover{opacity:.9;}
+.login-err{color:var(--red);font-size:13px;text-align:center;margin-top:10px;min-height:20px;}
+.login-hint{font-size:12px;color:var(--txt3);text-align:center;margin-top:14px;}
+.login-setup{background:var(--acc-lt);border:1px solid var(--acc);border-radius:12px;padding:14px;margin-bottom:20px;}
+.login-setup p{font-size:13px;color:var(--acc-txt);font-weight:500;}
+
+/* MAIN APP */
+#main-app{display:none;}
+.screen{display:none;padding-bottom:84px;min-height:100vh;}
+.screen.active{display:block;}
+.hdr{background:var(--bg-card);border-bottom:1px solid var(--brd);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;}
+.hdr-title{font-size:17px;font-weight:600;color:var(--txt1);}
+.hdr-sub{font-size:12px;color:var(--txt3);margin-top:1px;}
+.icon-btn{background:none;border:1px solid var(--brd);cursor:pointer;color:var(--txt2);font-size:20px;padding:6px;border-radius:8px;display:flex;align-items:center;transition:background .15s;}
+.icon-btn:hover{background:var(--bg-surf);}
+.hdr-actions{display:flex;gap:6px;align-items:center;}
+.bnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:var(--bg-card);border-top:1px solid var(--brd);display:flex;z-index:20;}
+.nitem{flex:1;display:flex;flex-direction:column;align-items:center;padding:10px 4px 16px;cursor:pointer;border:none;background:none;color:var(--txt3);font-size:10px;gap:3px;transition:color .2s;}
+.nitem i{font-size:22px;}
+.nitem.active{color:var(--acc);}
+.card{background:var(--bg-card);border-radius:14px;border:1px solid var(--brd);padding:14px 16px;margin:0 12px 10px;}
+.slbl{font-size:11px;font-weight:600;color:var(--txt3);text-transform:uppercase;letter-spacing:.6px;padding:14px 16px 6px;}
+.sbar{background:var(--acc);margin:12px;border-radius:16px;padding:18px 16px;}
+.sbar-bal{font-size:28px;font-weight:700;color:#fff;margin:4px 0 14px;}
+.sbar-mon{font-size:12px;color:rgba(255,255,255,.75);}
+.sbar-row{display:flex;gap:8px;}
+.sbar-mini{flex:1;background:rgba(0,0,0,.15);border-radius:10px;padding:9px 10px;}
+.sbar-mlbl{font-size:11px;color:rgba(255,255,255,.7);}
+.sbar-mval{font-size:15px;font-weight:600;color:#fff;}
+.prog-track{height:7px;background:var(--brd);border-radius:4px;overflow:hidden;margin-top:7px;}
+.prog-fill{height:100%;border-radius:4px;transition:width .4s;}
+.litem{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--brd);}
+.litem:last-child{border-bottom:none;}
+.iico{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:19px;background:var(--bg-surf);}
+.itxt{flex:1;min-width:0;}
+.iname{font-size:14px;font-weight:500;color:var(--txt1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.isub{font-size:12px;color:var(--txt3);margin-top:1px;}
+.iamt{font-size:15px;font-weight:600;text-align:right;white-space:nowrap;}
+.iamt.exp{color:var(--exp-col);}
+.iamt.inc{color:var(--inc-col);}
+.badge{font-size:11px;padding:3px 9px;border-radius:20px;font-weight:600;white-space:nowrap;}
+.bwarn{background:var(--amb-lt);color:var(--amb-txt);}
+.bok{background:var(--grn-lt);color:var(--grn-txt);}
+.bdanger{background:var(--red-lt);color:var(--red-txt);}
+.binfo{background:var(--blu-lt);color:var(--blu-txt);}
+.qrow{display:flex;gap:8px;margin:0 12px 10px;}
+.qbtn{flex:1;padding:12px 6px;border-radius:12px;border:1px solid var(--brd);background:var(--bg-card);display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;font-size:11px;font-weight:500;color:var(--txt2);transition:background .15s;}
+.qbtn:hover{background:var(--bg-surf);}
+.qbtn i{font-size:21px;}
+.qbtn.t i{color:var(--acc);}
+.qbtn.a i{color:var(--amb);}
+.qbtn.b i{color:var(--blu);}
+.qbtn.c i{color:var(--red);}
+
+/* MODALS */
+.moverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:50;align-items:flex-end;justify-content:center;}
+.moverlay.open{display:flex;}
+.mbox{background:var(--bg-card);border-radius:22px 22px 0 0;padding:20px 16px 40px;width:100%;max-width:430px;max-height:90vh;overflow-y:auto;}
+.mhandle{width:36px;height:4px;background:var(--brd2);border-radius:2px;margin:0 auto 16px;}
+.mtitle{font-size:16px;font-weight:600;color:var(--txt1);margin-bottom:14px;}
+.irow{margin-bottom:12px;}
+.irow label{font-size:12px;font-weight:500;color:var(--txt2);margin-bottom:5px;display:block;}
+.irow input,.irow select,.irow textarea{width:100%;padding:10px 13px;border-radius:10px;border:1px solid var(--brd2);background:var(--bg-inp);font-size:14px;color:var(--txt1);outline:none;font-family:inherit;}
+.irow input:focus,.irow select:focus,.irow textarea:focus{border-color:var(--acc);}
+.irow textarea{resize:none;height:72px;}
+.brow{display:flex;gap:8px;margin-top:14px;}
+.bcnl{flex:1;padding:12px;border-radius:10px;border:1px solid var(--brd2);background:var(--bg-surf);font-size:14px;font-weight:500;cursor:pointer;color:var(--txt2);font-family:inherit;}
+.bsav{flex:2;padding:12px;border-radius:10px;border:none;background:var(--acc);color:#fff;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;}
+.bsav:active{opacity:.85;}
+.bdel{flex:1;padding:12px;border-radius:10px;border:none;background:var(--red-lt);color:var(--red-txt);font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;}
+.tcheck{width:23px;height:23px;border-radius:7px;border:2px solid var(--brd2);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:all .2s;background:var(--bg-surf);}
+.tcheck.done{background:var(--acc);border-color:var(--acc);color:#fff;}
+.tdone{text-decoration:line-through;color:var(--txt3);}
+.catgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:4px 0 14px;}
+.catbtn{display:flex;flex-direction:column;align-items:center;gap:4px;padding:9px 4px;border-radius:10px;border:1.5px solid var(--brd);cursor:pointer;background:var(--bg-surf);font-size:11px;font-weight:500;color:var(--txt2);transition:all .15s;font-family:inherit;}
+.catbtn.sel{border-color:var(--acc);color:var(--acc-txt);background:var(--acc-lt);}
+.ncolpick{width:28px;height:28px;border-radius:50%;cursor:pointer;border:2.5px solid transparent;flex-shrink:0;}
+.ncolpick.sel{border-color:var(--acc);}
+.act-row{display:flex;gap:6px;margin-top:8px;}
+.act-btn{background:var(--bg-surf);border:1px solid var(--brd);padding:5px 10px;border-radius:7px;cursor:pointer;font-size:12px;font-weight:500;color:var(--txt2);display:flex;align-items:center;gap:4px;font-family:inherit;}
+.act-btn.del{color:var(--red-txt);background:var(--red-lt);border-color:transparent;}
+.toggle{width:46px;height:26px;border-radius:13px;background:var(--brd2);position:relative;cursor:pointer;transition:background .3s;flex-shrink:0;border:none;}
+.toggle.on{background:var(--acc);}
+.toggle-knob{width:20px;height:20px;border-radius:50%;background:#fff;position:absolute;top:3px;left:3px;transition:left .25s;}
+.toggle.on .toggle-knob{left:23px;}
+.toggle-wrap{display:flex;align-items:center;gap:12px;}
+.sep-line{height:1px;background:var(--brd);margin:12px 0;}
+.empty-state{color:var(--txt3);font-size:13px;text-align:center;padding:10px;}
+
+/* PIN MODAL */
+.pin-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:16px 0;}
+.pin-box{background:var(--bg-inp);border:1.5px solid var(--brd2);border-radius:10px;padding:12px 6px;font-size:18px;font-weight:700;text-align:center;color:var(--txt1);width:100%;}
+.pin-box:focus{border-color:var(--acc);outline:none;}
+.pin-info{font-size:12px;color:var(--txt3);text-align:center;margin-bottom:8px;}
+
+/* BACKUP SECTION */
+.backup-btn-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
+.backup-btn{padding:14px 10px;border-radius:12px;border:1px solid var(--brd);background:var(--bg-card);cursor:pointer;font-size:13px;font-weight:600;color:var(--txt2);display:flex;flex-direction:column;align-items:center;gap:6px;font-family:inherit;transition:background .15s;}
+.backup-btn:hover{background:var(--bg-surf);}
+.backup-btn i{font-size:24px;}
+.backup-btn.green{color:var(--grn);border-color:var(--grn-lt);background:var(--grn-lt);}
+.backup-btn.blue{color:var(--blu);border-color:var(--blu-lt);background:var(--blu-lt);}
+.backup-btn.red-b{color:var(--red-txt);border-color:var(--red-lt);background:var(--red-lt);}
+.backup-btn.amb{color:var(--amb-txt);border-color:var(--amb-lt);background:var(--amb-lt);}
+.backup-btn.prp{color:var(--prp-txt);border-color:var(--prp-lt);background:var(--prp-lt);}
+.backup-btn.acc{color:var(--acc-txt);border-color:var(--acc-lt);background:var(--acc-lt);}
+</style>
+</head>
+<body>
+
+<!-- ========== LOGIN PAGE ========== -->
+<div id="login-page">
+  <div class="login-logo">💰</div>
+  <div class="login-title">حياتي</div>
+  <div class="login-sub">مدير الأمور المالية والمهام اليومية</div>
+  <div class="login-card">
+    <div class="login-setup" id="setup-notice" style="display:none">
+      <p>🔐 أول مرة؟ أنشئ كلمة مرور للتطبيق</p>
+    </div>
+    <label class="login-label" id="login-lbl">كلمة المرور</label>
+    <input class="login-input" type="password" id="login-pass" placeholder="أدخل كلمة المرور" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+    <div id="login-confirm-row" style="display:none;margin-top:12px">
+      <label class="login-label">تأكيد كلمة المرور</label>
+      <input class="login-input" type="password" id="login-confirm" placeholder="أعد إدخال كلمة المرور" autocomplete="new-password">
+    </div>
+    <button class="login-btn" onclick="doLogin()" id="login-btn-txt">دخول</button>
+    <div class="login-err" id="login-err"></div>
+    <div class="login-hint" id="login-hint"></div>
+  </div>
+</div>
+
+<!-- ========== MAIN APP ========== -->
+<div id="main-app">
+
+<div id="s-home" class="screen active">
+  <div class="hdr">
+    <div><div class="hdr-title">مرحباً 👋</div><div class="hdr-sub">يونيو 2026</div></div>
+    <div class="hdr-actions">
+      <button class="icon-btn" id="theme-btn" onclick="toggleTheme()" title="المظهر"><i class="ti ti-moon"></i></button>
+      <button class="icon-btn" onclick="openM('m-notif')" title="الإعدادات"><i class="ti ti-settings"></i></button>
+      <button class="icon-btn" onclick="doLogout()" title="خروج"><i class="ti ti-logout"></i></button>
+    </div>
+  </div>
+  <div class="sbar">
+    <div class="sbar-mon">الرصيد المتبقي هذا الشهر</div>
+    <div class="sbar-bal" id="h-bal">٠ ر.س</div>
+    <div class="sbar-row">
+      <div class="sbar-mini"><div class="sbar-mlbl">الدخل</div><div class="sbar-mval" id="h-inc">٠</div></div>
+      <div class="sbar-mini"><div class="sbar-mlbl">المصروف</div><div class="sbar-mval" id="h-exp">٠</div></div>
+      <div class="sbar-mini"><div class="sbar-mlbl">الادخار</div><div class="sbar-mval" id="h-sav">٠٪</div></div>
+    </div>
+  </div>
+  <div class="qrow">
+    <button class="qbtn t" onclick="openM('m-addexp')"><i class="ti ti-minus-circle"></i><span>مصروف</span></button>
+    <button class="qbtn a" onclick="openM('m-addinc')"><i class="ti ti-plus-circle"></i><span>دخل</span></button>
+    <button class="qbtn b" onclick="openM('m-addtask')"><i class="ti ti-checkbox"></i><span>مهمة</span></button>
+    <button class="qbtn c" onclick="openM('m-addnote')"><i class="ti ti-note"></i><span>ملاحظة</span></button>
+  </div>
+  <div class="slbl">ترشيد الميزانية</div>
+  <div class="card" id="h-budgets"></div>
+  <div class="slbl">مهام اليوم</div>
+  <div class="card" id="h-tasks"></div>
+  <div class="slbl">أحدث المعاملات</div>
+  <div class="card" id="h-tx"></div>
+</div>
+
+<div id="s-tx" class="screen">
+  <div class="hdr">
+    <div class="hdr-title">المعاملات</div>
+    <button class="icon-btn" onclick="openM('m-addexp')" title="إضافة"><i class="ti ti-plus"></i></button>
+  </div>
+  <div class="slbl">كل المعاملات</div>
+  <div class="card" id="all-tx"></div>
+</div>
+
+<div id="s-sav" class="screen">
+  <div class="hdr"><div class="hdr-title">الادخار والأهداف</div></div>
+  <div class="card" style="margin-top:12px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+      <div style="font-size:13px;color:var(--txt2);font-weight:500">إجمالي المدخرات</div>
+    </div>
+    <div style="font-size:30px;font-weight:700;color:var(--acc)" id="sv-total">٠ ر.س</div>
+    <div style="font-size:12px;color:var(--txt3);margin-top:4px" id="sv-saved-lbl"></div>
+    <div style="margin-top:14px">
+      <div style="display:flex;justify-content:space-between;align-items:center;font-size:12px;margin-bottom:5px">
+        <span style="color:var(--txt2);font-weight:500">هدف نهاية السنة</span>
+        <div style="display:flex;align-items:center;gap:6px">
+          <span style="font-weight:700;color:var(--acc)" id="sv-pct">٠٪</span>
+          <button onclick="openYearlyModal()" style="background:var(--bg-surf);border:1px solid var(--brd);border-radius:6px;padding:2px 7px;cursor:pointer;font-size:11px;color:var(--txt2);font-family:inherit">تعديل</button>
+        </div>
+      </div>
+      <div class="prog-track"><div class="prog-fill" id="sv-bar" style="width:0%;background:var(--acc)"></div></div>
+      <div style="font-size:11px;color:var(--txt3);margin-top:5px" id="sv-yearly-lbl">هدف السنة: ٢٥٬٠٠٠ ر.س</div>
+    </div>
+  </div>
+  <div class="slbl">أهداف الادخار</div>
+  <div id="sv-goals"></div>
+  <div style="margin:0 12px 10px">
+    <button class="bsav" style="width:100%;border-radius:12px" onclick="openM('m-addgoal')"><i class="ti ti-plus"></i> إضافة هدف جديد</button>
+  </div>
+</div>
+
+<div id="s-tasks" class="screen">
+  <div class="hdr">
+    <div class="hdr-title">المهام والالتزامات</div>
+    <button class="icon-btn" onclick="openM('m-addtask')" title="إضافة مهمة"><i class="ti ti-plus"></i></button>
+  </div>
+  <div class="slbl">معلقة</div>
+  <div class="card" id="t-pending"></div>
+  <div class="slbl">مكتملة</div>
+  <div class="card" id="t-done"></div>
+</div>
+
+<div id="s-notes" class="screen">
+  <div class="hdr">
+    <div class="hdr-title">الملاحظات</div>
+    <button class="icon-btn" onclick="openM('m-addnote')" title="إضافة ملاحظة"><i class="ti ti-plus"></i></button>
+  </div>
+  <div id="notes-grid" style="padding:12px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px"></div>
+</div>
+
+<!-- BACKUP SCREEN -->
+<div id="s-backup" class="screen">
+  <div class="hdr"><div class="hdr-title">النسخ والتصدير</div></div>
+  <div class="slbl">تصدير البيانات</div>
+  <div class="card">
+    <div style="font-size:13px;color:var(--txt2);margin-bottom:10px;font-weight:500">اختر ما تريد تصديره:</div>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px">
+      <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:10px;border-radius:10px;border:1px solid var(--brd);background:var(--bg-surf)">
+        <input type="checkbox" id="chk-tx" checked style="width:18px;height:18px;accent-color:var(--acc)">
+        <span style="font-size:14px;font-weight:500;color:var(--txt1)">💳 المعاملات (دخل ومصروف)</span>
+      </label>
+      <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:10px;border-radius:10px;border:1px solid var(--brd);background:var(--bg-surf)">
+        <input type="checkbox" id="chk-tasks" checked style="width:18px;height:18px;accent-color:var(--acc)">
+        <span style="font-size:14px;font-weight:500;color:var(--txt1)">✅ المهام والالتزامات</span>
+      </label>
+      <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:10px;border-radius:10px;border:1px solid var(--brd);background:var(--bg-surf)">
+        <input type="checkbox" id="chk-goals" checked style="width:18px;height:18px;accent-color:var(--acc)">
+        <span style="font-size:14px;font-weight:500;color:var(--txt1)">🎯 أهداف الادخار</span>
+      </label>
+      <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:10px;border-radius:10px;border:1px solid var(--brd);background:var(--bg-surf)">
+        <input type="checkbox" id="chk-notes" checked style="width:18px;height:18px;accent-color:var(--acc)">
+        <span style="font-size:14px;font-weight:500;color:var(--txt1)">📝 الملاحظات</span>
+      </label>
+    </div>
+    <div class="backup-btn-row">
+      <button class="backup-btn green" onclick="exportExcel()"><i class="ti ti-file-spreadsheet"></i>تصدير Excel</button>
+      <button class="backup-btn red-b" onclick="exportPDF()"><i class="ti ti-file-type-pdf"></i>تصدير PDF</button>
+    </div>
+  </div>
+  <div class="slbl">النسخ الاحتياطي</div>
+  <div class="card">
+    <div class="backup-btn-row">
+      <button class="backup-btn blue" onclick="exportBackup()"><i class="ti ti-download"></i>تنزيل نسخة احتياطية</button>
+      <button class="backup-btn amb" onclick="document.getElementById('restore-file').click()"><i class="ti ti-upload"></i>استعادة نسخة</button>
+    </div>
+    <input type="file" id="restore-file" accept=".json" style="display:none" onchange="importBackup(this)">
+    <div style="font-size:12px;color:var(--txt3);margin-top:4px;text-align:center">النسخة الاحتياطية تحفظ جميع بياناتك كملف JSON</div>
+  </div>
+  <div class="slbl">نسخ التطبيق كاملاً</div>
+  <div class="card">
+    <div class="backup-btn-row">
+      <button class="backup-btn acc" onclick="copyAppWithData()"><i class="ti ti-copy"></i>نسخ مع البيانات</button>
+      <button class="backup-btn prp" onclick="copyAppClean()"><i class="ti ti-code"></i>نسخ بدون بيانات</button>
+    </div>
+    <div style="font-size:12px;color:var(--txt3);margin-top:4px;text-align:center">يحمّل ملف HTML كامل يعمل بشكل مستقل</div>
+  </div>
+  <div class="slbl">إدارة الأمان</div>
+  <div class="card" style="display:flex;flex-direction:column;gap:10px">
+    <button class="backup-btn" style="width:100%;flex-direction:row;justify-content:flex-start;gap:12px;padding:13px" onclick="openM('m-chgpass')">
+      <i class="ti ti-lock" style="font-size:22px;color:var(--blu)"></i>
+      <div><div style="font-size:14px;font-weight:600;color:var(--txt1)">تغيير كلمة مرور الدخول</div><div style="font-size:11px;color:var(--txt3);margin-top:2px">كلمة المرور لفتح التطبيق</div></div>
+    </button>
+    <button class="backup-btn" style="width:100%;flex-direction:row;justify-content:flex-start;gap:12px;padding:13px" onclick="openM('m-chgpin')">
+      <i class="ti ti-shield-lock" style="font-size:22px;color:var(--red)"></i>
+      <div><div style="font-size:14px;font-weight:600;color:var(--txt1)">تغيير رمز الحذف (PIN)</div><div style="font-size:11px;color:var(--txt3);margin-top:2px">الرمز المكون من ٤ أرقام لتأكيد الحذف</div></div>
+    </button>
+  </div>
+</div>
+
+<nav class="bnav">
+  <button class="nitem active" onclick="goTab('home',this)"><i class="ti ti-home"></i><span>الرئيسية</span></button>
+  <button class="nitem" onclick="goTab('tx',this)"><i class="ti ti-arrows-exchange"></i><span>معاملات</span></button>
+  <button class="nitem" onclick="goTab('sav',this)"><i class="ti ti-piggy-bank"></i><span>ادخار</span></button>
+  <button class="nitem" onclick="goTab('tasks',this)"><i class="ti ti-checkbox"></i><span>مهام</span></button>
+  <button class="nitem" onclick="goTab('notes',this)"><i class="ti ti-note"></i><span>ملاحظات</span></button>
+  <button class="nitem" onclick="goTab('backup',this)"><i class="ti ti-database-export"></i><span>نسخ</span></button>
+</nav>
+
+<!-- Install Banner -->
+<div id="install-banner" style="display:none;position:fixed;bottom:90px;left:50%;transform:translateX(-50%);width:calc(100% - 24px);max-width:406px;background:#0D7A5F;color:#fff;border-radius:14px;padding:12px 16px;z-index:30;align-items:center;gap:12px;box-shadow:0 4px 20px rgba(0,0,0,.25);">
+  <div style="font-size:26px">💰</div>
+  <div style="flex:1">
+    <div style="font-size:14px;font-weight:600">ثبّت تطبيق حياتي</div>
+    <div style="font-size:12px;opacity:.85;margin-top:2px">يعمل بدون إنترنت مثل أي تطبيق</div>
+  </div>
+  <button onclick="window._installApp()" style="background:#fff;color:#0D7A5F;border:none;padding:8px 14px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">تثبيت</button>
+  <button onclick="document.getElementById('install-banner').style.display='none'" style="background:rgba(255,255,255,.2);border:none;color:#fff;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;">✕</button>
+</div>
+
+</div><!-- end main-app -->
+
+<!-- ===== MODALS ===== -->
+
+<!-- Add Expense -->
+<div class="moverlay" id="m-addexp"><div class="mbox">
+  <div class="mhandle"></div>
+  <div class="mtitle" id="m-addexp-title">إضافة مصروف</div>
+  <input type="hidden" id="exp-edit-id">
+  <div class="catgrid" id="exp-catg">
+    <button class="catbtn sel" data-cat="طعام" onclick="pickCat(this,'exp')"><span style="font-size:20px">🍔</span>طعام</button>
+    <button class="catbtn" data-cat="تنقل" onclick="pickCat(this,'exp')"><span style="font-size:20px">🚗</span>تنقل</button>
+    <button class="catbtn" data-cat="تسوق" onclick="pickCat(this,'exp')"><span style="font-size:20px">🛒</span>تسوق</button>
+    <button class="catbtn" data-cat="صحة" onclick="pickCat(this,'exp')"><span style="font-size:20px">💊</span>صحة</button>
+    <button class="catbtn" data-cat="تعليم" onclick="pickCat(this,'exp')"><span style="font-size:20px">📚</span>تعليم</button>
+    <button class="catbtn" data-cat="ترفيه" onclick="pickCat(this,'exp')"><span style="font-size:20px">🎮</span>ترفيه</button>
+    <button class="catbtn" data-cat="فواتير" onclick="pickCat(this,'exp')"><span style="font-size:20px">💡</span>فواتير</button>
+    <button class="catbtn" data-cat="أخرى" onclick="pickCat(this,'exp')"><span style="font-size:20px">📦</span>أخرى</button>
+  </div>
+  <div class="irow"><label>المبلغ (ر.س)</label><input type="number" id="exp-amt" placeholder="0.00"></div>
+  <div class="irow"><label>الوصف</label><input type="text" id="exp-desc" placeholder="وصف المصروف"></div>
+  <div class="brow">
+    <button class="bcnl" onclick="closeM('m-addexp')">إلغاء</button>
+    <button class="bdel" id="exp-del-btn" style="display:none" onclick="reqPinDel('tx')">حذف</button>
+    <button class="bsav" onclick="saveTx('expense')">حفظ</button>
+  </div>
+</div></div>
+
+<!-- Add Income -->
+<div class="moverlay" id="m-addinc"><div class="mbox">
+  <div class="mhandle"></div>
+  <div class="mtitle" id="m-addinc-title">إضافة دخل</div>
+  <input type="hidden" id="inc-edit-id">
+  <div class="catgrid" id="inc-catg">
+    <button class="catbtn sel" data-cat="راتب" onclick="pickCat(this,'inc')"><span style="font-size:20px">💰</span>راتب</button>
+    <button class="catbtn" data-cat="مكافأة" onclick="pickCat(this,'inc')"><span style="font-size:20px">🎁</span>مكافأة</button>
+    <button class="catbtn" data-cat="عمل حر" onclick="pickCat(this,'inc')"><span style="font-size:20px">💻</span>عمل حر</button>
+    <button class="catbtn" data-cat="أخرى" onclick="pickCat(this,'inc')"><span style="font-size:20px">📦</span>أخرى</button>
+  </div>
+  <div class="irow"><label>المبلغ (ر.س)</label><input type="number" id="inc-amt" placeholder="0.00"></div>
+  <div class="irow"><label>الوصف</label><input type="text" id="inc-desc" placeholder="مصدر الدخل"></div>
+  <div class="brow">
+    <button class="bcnl" onclick="closeM('m-addinc')">إلغاء</button>
+    <button class="bdel" id="inc-del-btn" style="display:none" onclick="reqPinDel('tx')">حذف</button>
+    <button class="bsav" onclick="saveTx('income')">حفظ</button>
+  </div>
+</div></div>
+
+<!-- Add Task -->
+<div class="moverlay" id="m-addtask"><div class="mbox">
+  <div class="mhandle"></div>
+  <div class="mtitle" id="m-addtask-title">إضافة مهمة</div>
+  <input type="hidden" id="task-edit-id">
+  <div class="irow"><label>عنوان المهمة</label><input type="text" id="task-ttl" placeholder="ماذا تريد أن تفعل؟"></div>
+  <div class="irow"><label>الأولوية</label>
+    <select id="task-pri"><option value="عالية">🔴 عالية</option><option value="متوسطة" selected>🟡 متوسطة</option><option value="منخفضة">🟢 منخفضة</option></select>
+  </div>
+  <div class="irow"><label>التصنيف</label>
+    <select id="task-cat"><option>شخصي</option><option>مالي</option><option>عمل</option><option>صحة</option><option>التزام</option></select>
+  </div>
+  <div class="brow">
+    <button class="bcnl" onclick="closeM('m-addtask')">إلغاء</button>
+    <button class="bdel" id="task-del-btn" style="display:none" onclick="reqPinDel('task')">حذف</button>
+    <button class="bsav" onclick="saveTask()">حفظ</button>
+  </div>
+</div></div>
+
+<!-- Add Note -->
+<div class="moverlay" id="m-addnote"><div class="mbox">
+  <div class="mhandle"></div>
+  <div class="mtitle" id="m-addnote-title">إضافة ملاحظة</div>
+  <input type="hidden" id="note-edit-id">
+  <div class="irow"><label>العنوان</label><input type="text" id="note-ttl" placeholder="عنوان الملاحظة"></div>
+  <div class="irow"><label>المحتوى</label><textarea id="note-body" placeholder="اكتب ملاحظتك هنا..."></textarea></div>
+  <div class="irow"><label>اللون</label>
+    <div style="display:flex;gap:10px;margin-top:6px">
+      <div class="ncolpick sel" data-col="teal" onclick="pickNoteCol(this)" style="background:#C8EAE0"></div>
+      <div class="ncolpick" data-col="amber" onclick="pickNoteCol(this)" style="background:#FCDFA6"></div>
+      <div class="ncolpick" data-col="coral" onclick="pickNoteCol(this)" style="background:#FAC8BC"></div>
+      <div class="ncolpick" data-col="prp" onclick="pickNoteCol(this)" style="background:#D4D0F8"></div>
+      <div class="ncolpick" data-col="blue" onclick="pickNoteCol(this)" style="background:#B8D4F5"></div>
+    </div>
+  </div>
+  <div class="brow">
+    <button class="bcnl" onclick="closeM('m-addnote')">إلغاء</button>
+    <button class="bdel" id="note-del-btn" style="display:none" onclick="reqPinDel('note')">حذف</button>
+    <button class="bsav" onclick="saveNote()">حفظ</button>
+  </div>
+</div></div>
+
+<!-- Add Goal -->
+<div class="moverlay" id="m-addgoal"><div class="mbox">
+  <div class="mhandle"></div>
+  <div class="mtitle" id="m-addgoal-title">هدف ادخار جديد</div>
+  <input type="hidden" id="goal-edit-id">
+  <div class="irow"><label>اسم الهدف</label><input type="text" id="goal-name" placeholder="مثال: سيارة جديدة"></div>
+  <div class="irow"><label>المبلغ المستهدف (ر.س)</label><input type="number" id="goal-target" placeholder="0"></div>
+  <div class="irow"><label>المبلغ الحالي (ر.س)</label><input type="number" id="goal-cur" placeholder="0"></div>
+  <div class="brow">
+    <button class="bcnl" onclick="closeM('m-addgoal')">إلغاء</button>
+    <button class="bdel" id="goal-del-btn" style="display:none" onclick="reqPinDel('goal')">حذف</button>
+    <button class="bsav" onclick="saveGoal()">حفظ</button>
+  </div>
+</div></div>
+
+<!-- PIN DELETE MODAL -->
+<div class="moverlay" id="m-pin"><div class="mbox">
+  <div class="mhandle"></div>
+  <div class="mtitle">🔐 رمز الحذف</div>
+  <div class="pin-info">أدخل رمز الحذف المكون من ٤ أرقام للتأكيد</div>
+  <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
+    <div id="pin-disp" style="display:flex;gap:8px;flex:1;justify-content:center">
+      <div style="width:14px;height:14px;border-radius:50%;border:2px solid var(--brd2);background:var(--bg-surf)" class="pin-dot"></div>
+      <div style="width:14px;height:14px;border-radius:50%;border:2px solid var(--brd2);background:var(--bg-surf)" class="pin-dot"></div>
+      <div style="width:14px;height:14px;border-radius:50%;border:2px solid var(--brd2);background:var(--bg-surf)" class="pin-dot"></div>
+      <div style="width:14px;height:14px;border-radius:50%;border:2px solid var(--brd2);background:var(--bg-surf)" class="pin-dot"></div>
+    </div>
+  </div>
+  <div id="pin-err" style="color:var(--red);font-size:13px;text-align:center;min-height:20px;margin-bottom:8px"></div>
+  <!-- numpad -->
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px">
+    <button class="bcnl" style="padding:16px;font-size:18px;font-weight:700" onclick="pinKey('1')">1</button>
+    <button class="bcnl" style="padding:16px;font-size:18px;font-weight:700" onclick="pinKey('2')">2</button>
+    <button class="bcnl" style="padding:16px;font-size:18px;font-weight:700" onclick="pinKey('3')">3</button>
+    <button class="bcnl" style="padding:16px;font-size:18px;font-weight:700" onclick="pinKey('4')">4</button>
+    <button class="bcnl" style="padding:16px;font-size:18px;font-weight:700" onclick="pinKey('5')">5</button>
+    <button class="bcnl" style="padding:16px;font-size:18px;font-weight:700" onclick="pinKey('6')">6</button>
+    <button class="bcnl" style="padding:16px;font-size:18px;font-weight:700" onclick="pinKey('7')">7</button>
+    <button class="bcnl" style="padding:16px;font-size:18px;font-weight:700" onclick="pinKey('8')">8</button>
+    <button class="bcnl" style="padding:16px;font-size:18px;font-weight:700" onclick="pinKey('9')">9</button>
+    <button class="bcnl" style="padding:16px;font-size:18px" onclick="pinKey('clear')">مسح</button>
+    <button class="bcnl" style="padding:16px;font-size:18px;font-weight:700" onclick="pinKey('0')">0</button>
+    <button class="bcnl" style="padding:16px;font-size:18px" onclick="pinKey('back')">⌫</button>
+  </div>
+  <button class="bcnl" style="width:100%" onclick="closeM('m-pin');pinReset()">إلغاء</button>
+</div></div>
+
+<!-- Settings / Notifications -->
+<div class="moverlay" id="m-notif"><div class="mbox">
+  <div class="mhandle"></div>
+  <div class="mtitle">الإعدادات والتنبيهات</div>
+  <div class="litem">
+    <div class="iico" style="background:var(--amb-lt)"><i class="ti ti-alert-triangle" style="color:var(--amb);font-size:20px"></i></div>
+    <div class="itxt"><div class="iname">تحذير ميزانية الطعام</div><div class="isub">تجاوزت ٨٠٪ من الحد</div></div>
+    <span class="badge bwarn">تنبيه</span>
+  </div>
+  <div class="litem">
+    <div class="iico" style="background:var(--blu-lt)"><i class="ti ti-calendar" style="color:var(--blu);font-size:20px"></i></div>
+    <div class="itxt"><div class="iname">دفع الإيجار بعد ٣ أيام</div><div class="isub">التزام شهري</div></div>
+    <span class="badge binfo">قريب</span>
+  </div>
+  <div class="sep-line"></div>
+  <div style="font-size:13px;font-weight:600;color:var(--txt1);margin-bottom:12px">المظهر</div>
+  <div class="toggle-wrap">
+    <button class="toggle" id="theme-toggle" onclick="toggleTheme()"><div class="toggle-knob"></div></button>
+    <span style="font-size:13px;color:var(--txt2);font-weight:500" id="theme-lbl">الوضع الليلي</span>
+  </div>
+  <button class="bcnl" style="width:100%;margin-top:18px" onclick="closeM('m-notif')">إغلاق</button>
+</div></div>
+
+<!-- Edit Yearly Goal Modal -->
+<div class="moverlay" id="m-edit-yearly"><div class="mbox">
+  <div class="mhandle"></div>
+  <div class="mtitle">🎯 تعديل هدف الادخار السنوي</div>
+  <div class="irow">
+    <label>المبلغ المستهدف للسنة (ر.س)</label>
+    <input type="number" id="yearly-goal-inp" placeholder="مثال: 25000" style="font-size:18px;font-weight:600;text-align:center">
+  </div>
+  <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+    <button class="act-btn" style="flex:1;justify-content:center;padding:8px" onclick="setYearlyAmt(10000)">10,000</button>
+    <button class="act-btn" style="flex:1;justify-content:center;padding:8px" onclick="setYearlyAmt(25000)">25,000</button>
+    <button class="act-btn" style="flex:1;justify-content:center;padding:8px" onclick="setYearlyAmt(50000)">50,000</button>
+    <button class="act-btn" style="flex:1;justify-content:center;padding:8px" onclick="setYearlyAmt(100000)">100,000</button>
+  </div>
+  <div class="brow">
+    <button class="bcnl" onclick="closeM('m-edit-yearly')">إلغاء</button>
+    <button class="bsav" onclick="saveYearlyGoal()">حفظ الهدف</button>
+  </div>
+</div></div>
+
+<!-- Deposit Modal -->
+<div class="moverlay" id="m-deposit"><div class="mbox">
+  <div class="mhandle"></div>
+  <div class="mtitle" id="deposit-title">إضافة مبلغ للهدف</div>
+  <input type="hidden" id="deposit-goal-id">
+  <div style="background:var(--acc-lt);border-radius:12px;padding:14px;margin-bottom:16px;display:flex;align-items:center;gap:12px">
+    <div style="font-size:28px" id="deposit-goal-icon">🎯</div>
+    <div>
+      <div style="font-size:15px;font-weight:600;color:var(--acc-txt)" id="deposit-goal-name">-</div>
+      <div style="font-size:12px;color:var(--acc-txt);margin-top:2px">الحالي: <span id="deposit-cur-val">٠</span> ر.س من <span id="deposit-target-val">٠</span> ر.س</div>
+    </div>
+  </div>
+  <div class="irow">
+    <label>المبلغ المراد إضافته (ر.س)</label>
+    <input type="number" id="deposit-amt" placeholder="0.00" style="font-size:18px;font-weight:600;text-align:center">
+  </div>
+  <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+    <button class="act-btn" style="flex:1;justify-content:center;padding:8px" onclick="setDepAmt(100)">100</button>
+    <button class="act-btn" style="flex:1;justify-content:center;padding:8px" onclick="setDepAmt(500)">500</button>
+    <button class="act-btn" style="flex:1;justify-content:center;padding:8px" onclick="setDepAmt(1000)">1,000</button>
+    <button class="act-btn" style="flex:1;justify-content:center;padding:8px" onclick="setDepAmt(2000)">2,000</button>
+  </div>
+  <div class="brow">
+    <button class="bcnl" onclick="closeM('m-deposit')">إلغاء</button>
+    <button class="bsav" onclick="doDeposit()"><i class="ti ti-circle-plus"></i> إضافة للهدف</button>
+  </div>
+</div></div>
+<div class="moverlay" id="m-chgpass"><div class="mbox">
+  <div class="mhandle"></div>
+  <div class="mtitle">🔑 تغيير كلمة المرور</div>
+  <div class="irow"><label>كلمة المرور الحالية</label><input type="password" id="cp-old" placeholder="أدخل كلمة المرور الحالية" class="login-input" style="font-size:14px;padding:10px 13px"></div>
+  <div class="irow"><label>كلمة المرور الجديدة</label><input type="password" id="cp-new" placeholder="أدخل كلمة المرور الجديدة" class="login-input" style="font-size:14px;padding:10px 13px"></div>
+  <div class="irow"><label>تأكيد كلمة المرور الجديدة</label><input type="password" id="cp-confirm" placeholder="أعد إدخال كلمة المرور" class="login-input" style="font-size:14px;padding:10px 13px"></div>
+  <div id="cp-err" style="color:var(--red);font-size:13px;min-height:20px"></div>
+  <div class="brow">
+    <button class="bcnl" onclick="closeM('m-chgpass')">إلغاء</button>
+    <button class="bsav" onclick="changePassword()">حفظ</button>
+  </div>
+</div></div>
+
+<!-- Change PIN Modal -->
+<div class="moverlay" id="m-chgpin"><div class="mbox">
+  <div class="mhandle"></div>
+  <div class="mtitle">🔐 تغيير رمز الحذف</div>
+  <div style="font-size:13px;color:var(--txt3);margin-bottom:16px">الرمز الجديد يجب أن يكون ٤ أرقام مختلفة عن الرمز الحالي</div>
+  <div class="irow"><label>الرمز الحالي</label><input type="password" maxlength="4" id="np-old" placeholder="أدخل الرمز الحالي" class="login-input" style="font-size:18px;letter-spacing:6px;padding:10px 13px"></div>
+  <div class="irow"><label>الرمز الجديد</label><input type="password" maxlength="4" id="np-new" placeholder="أدخل الرمز الجديد" class="login-input" style="font-size:18px;letter-spacing:6px;padding:10px 13px"></div>
+  <div id="np-err" style="color:var(--red);font-size:13px;min-height:20px"></div>
+  <div class="brow">
+    <button class="bcnl" onclick="closeM('m-chgpin')">إلغاء</button>
+    <button class="bsav" onclick="changePIN()">حفظ</button>
+  </div>
+</div></div>
+
+<script>
+// ====== CONSTANTS ======
+const NOTE_L={teal:{bg:'#C8EAE0',txt:'#074D3B'},amber:{bg:'#FCDFA6',txt:'#6B3E00'},coral:{bg:'#FAC8BC',txt:'#7B1A12'},prp:{bg:'#D4D0F8',txt:'#2E2580'},blue:{bg:'#B8D4F5',txt:'#0C3D72'}};
+const NOTE_D={teal:{bg:'#0B2E22',txt:'#5DE0B0'},amber:{bg:'#2A1E08',txt:'#F5C070'},coral:{bg:'#2A1210',txt:'#F5948E'},prp:{bg:'#1A1830',txt:'#B8B4F8'},blue:{bg:'#0A1E30',txt:'#88C4F5'}};
+const ICONS={طعام:'🍔',تنقل:'🚗',تسوق:'🛒',صحة:'💊',تعليم:'📚',ترفيه:'🎮',فواتير:'💡',راتب:'💰',مكافأة:'🎁','عمل حر':'💻',إيجار:'🏠',أخرى:'📦'};
+const DEFAULT_PIN='1234';
+const DEFAULT_PASS='hayati2026';
+
+// ====== STATE ======
+function loadState(){
+  try{const s=localStorage.getItem('hayati-v3');if(s)return JSON.parse(s);}catch(e){}
+  return{
+    dark:false,nid:30,selExpCat:'طعام',selIncCat:'راتب',selNoteCol:'teal',
+    pin:DEFAULT_PIN, pass:DEFAULT_PASS,
+    tx:[
+      {id:1,type:'income',cat:'راتب',desc:'راتب يونيو',amount:12000,date:'١ يون'},
+      {id:2,type:'expense',cat:'إيجار',desc:'إيجار الشقة',amount:3000,date:'١ يون'},
+      {id:3,type:'expense',cat:'طعام',desc:'بقالة الأسبوع',amount:480,date:'٣ يون'},
+      {id:4,type:'expense',cat:'تنقل',desc:'وقود',amount:220,date:'٤ يون'},
+      {id:5,type:'expense',cat:'فواتير',desc:'كهرباء وماء',amount:650,date:'٥ يون'},
+      {id:6,type:'expense',cat:'طعام',desc:'مطعم العائلة',amount:380,date:'٥ يون'},
+      {id:7,type:'expense',cat:'تسوق',desc:'ملابس',amount:920,date:'٦ يون'},
+      {id:8,type:'expense',cat:'صحة',desc:'صيدلية',amount:150,date:'٦ يون'},
+      {id:9,type:'expense',cat:'ترفيه',desc:'اشتراكات',amount:337,date:'٦ يون'},
+      {id:10,type:'expense',cat:'فواتير',desc:'إنترنت',amount:300,date:'٦ يون'},
+    ],
+    tasks:[
+      {id:1,title:'مراجعة ميزانية الشهر',priority:'عالية',cat:'مالي',done:false},
+      {id:2,title:'دفع فاتورة الاتصالات',priority:'عالية',cat:'التزام',done:false},
+      {id:3,title:'موعد طبيب الأسنان',priority:'متوسطة',cat:'صحة',done:false},
+      {id:4,title:'اتمام كورس Excel',priority:'منخفضة',cat:'عمل',done:true},
+    ],
+    notes:[
+      {id:1,title:'أهداف 2026',body:'توفير ٢٥ ألف، سداد القرض، رحلة مع الأسرة',col:'teal'},
+      {id:2,title:'نصائح الادخار',body:'قاعدة ٥٠/٣٠/٢٠: احتياجات، رغبات، ادخار',col:'amber'},
+      {id:3,title:'رقم المحاسب',body:'أبو خالد: 0502223344',col:'prp'},
+    ],
+    goals:[
+      {id:1,name:'صندوق الطوارئ',target:20000,current:12000,icon:'🛡️'},
+      {id:2,name:'رحلة عائلية',target:8000,current:3500,icon:'✈️'},
+      {id:3,name:'سيارة جديدة',target:60000,current:18000,icon:'🚗'},
+    ],
+    budgets:[
+      {cat:'طعام',icon:'🍔',limit:1500},
+      {cat:'تنقل',icon:'🚗',limit:800},
+      {cat:'تسوق',icon:'🛒',limit:1000},
+      {cat:'ترفيه',icon:'🎮',limit:300},
+    ]
+  };
+}
+const S=loadState();
+function save(){try{localStorage.setItem('hayati-v3',JSON.stringify(S));}catch(e){}}
+
+// ====== HELPERS ======
+function ar(n){return String(Math.round(n)).replace(/[0-9]/g,c=>'٠١٢٣٤٥٦٧٨٩'[c]);}
+function fmt(n){return ar(n.toLocaleString('en'));}
+function openM(id){document.getElementById(id).classList.add('open');}
+function closeM(id){document.getElementById(id).classList.remove('open');}
+document.querySelectorAll('.moverlay').forEach(m=>m.addEventListener('click',e=>{if(e.target===m){m.classList.remove('open');pinReset();}}));
+
+// ====== LOGIN ======
+let isFirstSetup=false;
+function initLogin(){
+  const hasPass=!!S.pass;
+  if(!hasPass||S.pass===DEFAULT_PASS){
+    // first time, keep default and show hint
+    document.getElementById('login-hint').textContent='كلمة المرور الافتراضية: '+DEFAULT_PASS;
+  }
+  if(!S.pin) S.pin=DEFAULT_PIN;
+  document.getElementById('login-page').style.display='flex';
+  document.getElementById('main-app').style.display='none';
+}
+function doLogin(){
+  const pass=document.getElementById('login-pass').value;
+  const err=document.getElementById('login-err');
+  if(!pass){err.textContent='أدخل كلمة المرور';return;}
+  if(isFirstSetup){
+    const confirm=document.getElementById('login-confirm').value;
+    if(pass.length<4){err.textContent='كلمة المرور يجب أن تكون ٤ حروف على الأقل';return;}
+    if(pass!==confirm){err.textContent='كلمتا المرور غير متطابقتين';return;}
+    S.pass=pass;save();
+  } else {
+    if(pass!==S.pass){err.textContent='كلمة المرور غير صحيحة';return;}
+  }
+  err.textContent='';
+  document.getElementById('login-page').style.display='none';
+  document.getElementById('main-app').style.display='block';
+  applyTheme();
+  renderAll();
+  // Show install banner if available
+  setTimeout(()=>{
+    const banner=document.getElementById('install-banner');
+    if(banner && window._deferredPromptReady) banner.style.display='flex';
+  },1500);
+}
+function doLogout(){
+  document.getElementById('login-page').style.display='flex';
+  document.getElementById('main-app').style.display='none';
+  document.getElementById('login-pass').value='';
+  document.getElementById('login-err').textContent='';
+}
+function changePassword(){
+  const oldP=document.getElementById('cp-old').value;
+  const newP=document.getElementById('cp-new').value;
+  const conf=document.getElementById('cp-confirm').value;
+  const err=document.getElementById('cp-err');
+  if(oldP!==S.pass){err.textContent='كلمة المرور الحالية غير صحيحة';return;}
+  if(newP.length<4){err.textContent='كلمة المرور الجديدة قصيرة جداً';return;}
+  if(newP!==conf){err.textContent='كلمتا المرور غير متطابقتين';return;}
+  S.pass=newP;save();
+  closeM('m-chgpass');
+  ['cp-old','cp-new','cp-confirm'].forEach(id=>document.getElementById(id).value='');
+  err.textContent='';
+  alert('✅ تم تغيير كلمة المرور بنجاح');
+}
+
+// ====== PIN (delete lock) ======
+let pinBuf='';
+let pinTarget='';
+let pinTargetId=null;
+function reqPinDel(target){
+  pinBuf='';pinTarget=target;
+  updatePinDots();
+  document.getElementById('pin-err').textContent='';
+  openM('m-pin');
+}
+function pinKey(k){
+  if(k==='clear'){pinBuf='';updatePinDots();return;}
+  if(k==='back'){pinBuf=pinBuf.slice(0,-1);updatePinDots();return;}
+  if(pinBuf.length>=4)return;
+  pinBuf+=k;
+  updatePinDots();
+  if(pinBuf.length===4) setTimeout(checkPin,200);
+}
+function updatePinDots(){
+  document.querySelectorAll('.pin-dot').forEach((d,i)=>{
+    d.style.background=i<pinBuf.length?'var(--acc)':'var(--bg-surf)';
+    d.style.borderColor=i<pinBuf.length?'var(--acc)':'var(--brd2)';
+  });
+}
+function checkPin(){
+  if(pinBuf===S.pin){
+    closeM('m-pin');
+    if(pinTarget==='tx') execDelTx();
+    else if(pinTarget==='task') execDelTask();
+    else if(pinTarget==='note') execDelNote();
+    else if(pinTarget==='goal') execDelGoal();
+    pinReset();
+  } else {
+    document.getElementById('pin-err').textContent='❌ رمز الحذف غير صحيح';
+    pinBuf='';updatePinDots();
+  }
+}
+function pinReset(){pinBuf='';pinTarget='';updatePinDots();}
+function changePIN(){
+  const oldPin=document.getElementById('np-old').value;
+  const newPin=document.getElementById('np-new').value;
+  const err=document.getElementById('np-err');
+  if(oldPin!==S.pin){err.textContent='الرمز الحالي غير صحيح';return;}
+  if(!/^\d{4}$/.test(newPin)){err.textContent='الرمز الجديد يجب أن يكون ٤ أرقام';return;}
+  if(newPin===oldPin){err.textContent='الرمز الجديد يجب أن يختلف عن الحالي';return;}
+  S.pin=newPin;save();
+  closeM('m-chgpin');
+  document.getElementById('np-old').value='';
+  document.getElementById('np-new').value='';
+  err.textContent='';
+  alert('✅ تم تغيير رمز الحذف بنجاح');
+}
+
+// ====== THEME ======
+function applyTheme(){
+  document.body.className=S.dark?'dark':'';
+  document.getElementById('theme-btn').innerHTML=S.dark?'<i class="ti ti-sun"></i>':'<i class="ti ti-moon"></i>';
+  const tog=document.getElementById('theme-toggle');
+  if(tog) tog.className=S.dark?'toggle on':'toggle';
+  const lbl=document.getElementById('theme-lbl');
+  if(lbl) lbl.textContent=S.dark?'الوضع النهاري':'الوضع الليلي';
+}
+function toggleTheme(){S.dark=!S.dark;save();applyTheme();renderAll();}
+
+// ====== NAVIGATION ======
+function goTab(name,el){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nitem').forEach(n=>n.classList.remove('active'));
+  document.getElementById('s-'+name).classList.add('active');
+  el.classList.add('active');
+}
+
+// ====== CATEGORY PICKERS ======
+function pickCat(el,type){
+  document.getElementById(type==='exp'?'exp-catg':'inc-catg').querySelectorAll('.catbtn').forEach(b=>b.classList.remove('sel'));
+  el.classList.add('sel');
+  if(type==='exp')S.selExpCat=el.dataset.cat;else S.selIncCat=el.dataset.cat;
+}
+function pickNoteCol(el){
+  document.querySelectorAll('.ncolpick').forEach(c=>c.classList.remove('sel'));
+  el.classList.add('sel');S.selNoteCol=el.dataset.col;
+}
+
+// ====== CALCULATIONS ======
+function calcTotals(){
+  let inc=0,exp=0;
+  S.tx.forEach(t=>{if(t.type==='income')inc+=t.amount;else exp+=t.amount;});
+  return{inc,exp,bal:inc-exp};
+}
+function budgetBar(pct){
+  if(pct>=90)return{fill:'var(--red)',cls:'bdanger',lbl:'تجاوز'};
+  if(pct>=70)return{fill:'var(--amb)',cls:'bwarn',lbl:'تحذير'};
+  return{fill:'var(--acc)',cls:'bok',lbl:'جيد'};
+}
+
+// ====== RENDER FUNCTIONS ======
+function txItem(t,actions=false){
+  const sign=t.type==='expense'?'-':'+';
+  const cls=t.type==='expense'?'exp':'inc';
+  const act=actions?`<div class="act-row">
+    <button class="act-btn" onclick="editTx(${t.id})"><i class="ti ti-edit"></i>تعديل</button>
+    <button class="act-btn del" onclick="openDelTx(${t.id})"><i class="ti ti-trash"></i>حذف</button>
+  </div>`:'';
+  return `<div class="litem" style="flex-wrap:wrap">
+    <div class="iico">${ICONS[t.cat]||'📦'}</div>
+    <div class="itxt"><div class="iname">${t.desc}</div><div class="isub">${t.cat} · ${t.date}</div>${act}</div>
+    <div class="iamt ${cls}">${sign}${fmt(t.amount)} ر.س</div>
+  </div>`;
+}
+function taskHTML(t){
+  const pc=t.priority==='عالية'?'bdanger':t.priority==='متوسطة'?'bwarn':'bok';
+  return `<div class="litem" style="flex-wrap:wrap">
+    <div class="tcheck ${t.done?'done':''}" onclick="toggleTask(${t.id})">${t.done?'<i class="ti ti-check" style="font-size:13px"></i>':''}</div>
+    <div class="itxt"><div class="iname ${t.done?'tdone':''}">${t.title}</div><div class="isub">${t.cat}</div>
+      <div class="act-row">
+        <button class="act-btn" onclick="editTask(${t.id})"><i class="ti ti-edit"></i>تعديل</button>
+        <button class="act-btn del" onclick="openDelTask(${t.id})"><i class="ti ti-trash"></i>حذف</button>
+      </div>
+    </div>
+    <span class="badge ${pc}">${t.priority}</span>
+  </div>`;
+}
+function renderHome(){
+  const{inc,exp,bal}=calcTotals();
+  document.getElementById('h-bal').textContent=fmt(bal)+' ر.س';
+  document.getElementById('h-inc').textContent=fmt(inc);
+  document.getElementById('h-exp').textContent=fmt(exp);
+  const sp=inc>0?Math.max(0,Math.round((bal/inc)*100)):0;
+  document.getElementById('h-sav').textContent=ar(sp)+'٪';
+  const ec={};S.tx.filter(t=>t.type==='expense').forEach(t=>{ec[t.cat]=(ec[t.cat]||0)+t.amount;});
+  document.getElementById('h-budgets').innerHTML=S.budgets.map(b=>{
+    const spent=ec[b.cat]||0;
+    const pct=Math.min(100,Math.round((spent/b.limit)*100));
+    const{fill,cls,lbl}=budgetBar(pct);
+    return `<div class="litem"><div class="iico">${b.icon}</div><div class="itxt">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px"><div class="iname">${b.cat}</div><span class="badge ${cls}">${lbl}</span></div>
+      <div class="prog-track"><div class="prog-fill" style="width:${pct}%;background:${fill}"></div></div>
+      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--txt3);margin-top:4px"><span>${fmt(spent)} ر.س</span><span>من ${fmt(b.limit)} ر.س</span></div>
+    </div></div>`;
+  }).join('');
+  const pend=S.tasks.filter(t=>!t.done).slice(0,3);
+  const pc=t=>t.priority==='عالية'?'bdanger':t.priority==='متوسطة'?'bwarn':'bok';
+  document.getElementById('h-tasks').innerHTML=pend.length?pend.map(t=>`<div class="litem">
+    <div class="tcheck ${t.done?'done':''}" onclick="toggleTask(${t.id})">${t.done?'<i class="ti ti-check" style="font-size:13px"></i>':''}</div>
+    <div class="itxt"><div class="iname">${t.title}</div><div class="isub">${t.cat}</div></div>
+    <span class="badge ${pc(t)}">${t.priority}</span>
+  </div>`).join(''):'<div class="empty-state">أنجزت كل مهامك اليوم 🎉</div>';
+  document.getElementById('h-tx').innerHTML=S.tx.slice(-4).reverse().map(t=>txItem(t,false)).join('');
+}
+function renderTx(){document.getElementById('all-tx').innerHTML=S.tx.slice().reverse().map(t=>txItem(t,true)).join('')||'<div class="empty-state">لا توجد معاملات</div>';}
+function renderSav(){
+  const tot=S.goals.reduce((a,g)=>a+g.current,0);
+  const yearlyGoal=S.yearlyGoal||25000;
+  document.getElementById('sv-total').textContent=fmt(tot)+' ر.س';
+  // show how much saved vs yearly goal
+  const rem=Math.max(0,yearlyGoal-tot);
+  const lbl=document.getElementById('sv-saved-lbl');
+  if(lbl) lbl.textContent= tot>=yearlyGoal ? '🎉 حققت هدفك السنوي!' : 'متبقي '+fmt(rem)+' ر.س لتحقيق الهدف';
+  const pct=Math.min(100,Math.round((tot/yearlyGoal)*100));
+  document.getElementById('sv-pct').textContent=ar(pct)+'٪';
+  document.getElementById('sv-bar').style.width=pct+'%';
+  const yl=document.getElementById('sv-yearly-lbl');
+  if(yl) yl.textContent='هدف السنة: '+fmt(yearlyGoal)+' ر.س';
+  document.getElementById('sv-goals').innerHTML=S.goals.map(g=>{
+    const p=Math.min(100,Math.round((g.current/g.target)*100));
+    return `<div class="card">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+        <div style="font-size:26px">${g.icon}</div>
+        <div style="flex:1"><div class="iname">${g.name}</div><div class="isub">متبقي ${fmt(g.target-g.current)} ر.س</div></div>
+        <div style="font-size:20px;font-weight:700;color:var(--acc)">${ar(p)}٪</div>
+      </div>
+      <div class="prog-track"><div class="prog-fill" style="width:${p}%;background:var(--acc)"></div></div>
+      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--txt3);margin-top:5px"><span>${fmt(g.current)} ر.س</span><span>${fmt(g.target)} ر.س</span></div>
+      <div class="act-row" style="margin-top:10px">
+        <button class="act-btn" style="color:var(--acc-txt);background:var(--acc-lt);border-color:transparent;font-weight:600" onclick="openDeposit(${g.id})"><i class="ti ti-circle-plus"></i>إضافة</button>
+        <button class="act-btn" onclick="editGoal(${g.id})"><i class="ti ti-edit"></i>تعديل</button>
+        <button class="act-btn del" onclick="openDelGoal(${g.id})"><i class="ti ti-trash"></i>حذف</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+function setYearlyAmt(v){document.getElementById('yearly-goal-inp').value=v;}
+function saveYearlyGoal(){
+  const v=parseFloat(document.getElementById('yearly-goal-inp').value);
+  if(!v||v<=0){alert('أدخل مبلغاً صحيحاً');return;}
+  S.yearlyGoal=v;save();closeM('m-edit-yearly');renderSav();
+}
+// open yearly modal prefilled
+document.addEventListener('DOMContentLoaded',()=>{
+  const inp=document.getElementById('yearly-goal-inp');
+  document.getElementById('m-edit-yearly').addEventListener('click',()=>{});
+});
+function openYearlyModal(){
+  document.getElementById('yearly-goal-inp').value=S.yearlyGoal||25000;
+  openM('m-edit-yearly');
+}
+function renderTasks(){
+  document.getElementById('t-pending').innerHTML=S.tasks.filter(t=>!t.done).map(taskHTML).join('')||'<div class="empty-state">لا توجد مهام معلقة</div>';
+  document.getElementById('t-done').innerHTML=S.tasks.filter(t=>t.done).map(taskHTML).join('')||'<div class="empty-state">لا توجد مهام مكتملة</div>';
+}
+function renderNotes(){
+  const pal=S.dark?NOTE_D:NOTE_L;
+  document.getElementById('notes-grid').innerHTML=S.notes.map(n=>{
+    const c=pal[n.col]||pal.teal;
+    return `<div style="background:${c.bg};border-radius:12px;padding:13px;min-height:110px;border:1px solid rgba(0,0,0,.06)">
+      <div style="font-size:14px;font-weight:600;color:${c.txt};margin-bottom:7px">${n.title}</div>
+      <div style="font-size:12px;color:${c.txt};opacity:.8;line-height:1.55;margin-bottom:10px">${n.body.substring(0,60)}${n.body.length>60?'...':''}</div>
+      <div style="display:flex;gap:6px">
+        <button style="background:rgba(0,0,0,.1);border:none;padding:5px 8px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:500;color:${c.txt};display:flex;align-items:center;gap:3px;font-family:inherit" onclick="editNote(${n.id})"><i class="ti ti-edit" style="font-size:13px"></i>تعديل</button>
+        <button style="background:rgba(0,0,0,.1);border:none;padding:5px 8px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:500;color:${c.txt};display:flex;align-items:center;gap:3px;font-family:inherit" onclick="openDelNote(${n.id})"><i class="ti ti-trash" style="font-size:13px"></i>حذف</button>
+      </div>
+    </div>`;
+  }).join('')||'<div class="empty-state" style="grid-column:span 2">لا توجد ملاحظات</div>';
+}
+function renderAll(){renderHome();renderTx();renderSav();renderTasks();renderNotes();}
+
+// ====== TX CRUD ======
+function saveTx(type){
+  const pre=type==='expense'?'exp':'inc';
+  const editId=document.getElementById(pre+'-edit-id').value;
+  const amt=parseFloat(document.getElementById(pre+'-amt').value);
+  const desc=document.getElementById(pre+'-desc').value;
+  if(!amt||amt<=0)return;
+  const cat=type==='expense'?S.selExpCat:S.selIncCat;
+  if(editId){const t=S.tx.find(x=>x.id==editId);if(t){t.cat=cat;t.desc=desc||cat;t.amount=amt;}}
+  else S.tx.push({id:S.nid++,type,cat,desc:desc||cat,amount:amt,date:'اليوم'});
+  closeM('m-add'+pre);resetTxForm(type);save();renderAll();
+}
+function resetTxForm(type){
+  const pre=type==='expense'?'exp':'inc';
+  document.getElementById(pre+'-edit-id').value='';
+  document.getElementById(pre+'-amt').value='';
+  document.getElementById(pre+'-desc').value='';
+  document.getElementById(pre+'-del-btn').style.display='none';
+  document.getElementById('m-add'+pre+'-title').textContent=type==='expense'?'إضافة مصروف':'إضافة دخل';
+}
+function editTx(id){
+  const t=S.tx.find(x=>x.id===id);if(!t)return;
+  const isExp=t.type==='expense';const pre=isExp?'exp':'inc';
+  document.getElementById(pre+'-edit-id').value=id;
+  document.getElementById(pre+'-amt').value=t.amount;
+  document.getElementById(pre+'-desc').value=t.desc;
+  document.getElementById(pre+'-del-btn').style.display='block';
+  document.getElementById('m-add'+pre+'-title').textContent='تعديل '+(isExp?'المصروف':'الدخل');
+  document.getElementById(isExp?'exp-catg':'inc-catg').querySelectorAll('.catbtn').forEach(b=>b.classList.toggle('sel',b.dataset.cat===t.cat));
+  if(isExp)S.selExpCat=t.cat;else S.selIncCat=t.cat;
+  openM('m-add'+pre);
+}
+// open via PIN from inline delete button
+let _pendDelTxId=null;
+function openDelTx(id){_pendDelTxId=id;pinTarget='tx';pinBuf='';updatePinDots();document.getElementById('pin-err').textContent='';openM('m-pin');}
+function execDelTx(){
+  const id=_pendDelTxId||document.getElementById('exp-edit-id').value||document.getElementById('inc-edit-id').value;
+  if(id)S.tx=S.tx.filter(x=>x.id!=id);
+  closeM('m-addexp');closeM('m-addinc');resetTxForm('expense');resetTxForm('income');
+  _pendDelTxId=null;save();renderAll();
+}
+
+// ====== TASK CRUD ======
+function saveTask(){
+  const editId=document.getElementById('task-edit-id').value;
+  const title=document.getElementById('task-ttl').value.trim();
+  const pri=document.getElementById('task-pri').value;
+  const cat=document.getElementById('task-cat').value;
+  if(!title)return;
+  if(editId){const t=S.tasks.find(x=>x.id==editId);if(t){t.title=title;t.priority=pri;t.cat=cat;}}
+  else S.tasks.unshift({id:S.nid++,title,priority:pri,cat,done:false});
+  closeM('m-addtask');resetTaskForm();save();renderAll();
+}
+function resetTaskForm(){
+  document.getElementById('task-edit-id').value='';
+  document.getElementById('task-ttl').value='';
+  document.getElementById('task-del-btn').style.display='none';
+  document.getElementById('m-addtask-title').textContent='إضافة مهمة';
+}
+function editTask(id){
+  const t=S.tasks.find(x=>x.id===id);if(!t)return;
+  document.getElementById('task-edit-id').value=id;
+  document.getElementById('task-ttl').value=t.title;
+  document.getElementById('task-pri').value=t.priority;
+  document.getElementById('task-cat').value=t.cat;
+  document.getElementById('task-del-btn').style.display='block';
+  document.getElementById('m-addtask-title').textContent='تعديل المهمة';
+  openM('m-addtask');
+}
+let _pendDelTaskId=null;
+function openDelTask(id){_pendDelTaskId=id;pinTarget='task';pinBuf='';updatePinDots();document.getElementById('pin-err').textContent='';openM('m-pin');}
+function execDelTask(){
+  const id=_pendDelTaskId||document.getElementById('task-edit-id').value;
+  if(id)S.tasks=S.tasks.filter(x=>x.id!=id);
+  closeM('m-addtask');resetTaskForm();_pendDelTaskId=null;save();renderAll();
+}
+function toggleTask(id){const t=S.tasks.find(x=>x.id===id);if(t){t.done=!t.done;save();renderTasks();renderHome();}}
+
+// ====== NOTE CRUD ======
+function saveNote(){
+  const editId=document.getElementById('note-edit-id').value;
+  const title=document.getElementById('note-ttl').value.trim();
+  const body=document.getElementById('note-body').value.trim();
+  if(!title)return;
+  if(editId){const n=S.notes.find(x=>x.id==editId);if(n){n.title=title;n.body=body;n.col=S.selNoteCol;}}
+  else S.notes.unshift({id:S.nid++,title,body,col:S.selNoteCol});
+  closeM('m-addnote');resetNoteForm();save();renderNotes();
+}
+function resetNoteForm(){
+  document.getElementById('note-edit-id').value='';
+  document.getElementById('note-ttl').value='';
+  document.getElementById('note-body').value='';
+  document.getElementById('note-del-btn').style.display='none';
+  document.getElementById('m-addnote-title').textContent='إضافة ملاحظة';
+}
+function editNote(id){
+  const n=S.notes.find(x=>x.id===id);if(!n)return;
+  document.getElementById('note-edit-id').value=id;
+  document.getElementById('note-ttl').value=n.title;
+  document.getElementById('note-body').value=n.body;
+  document.getElementById('note-del-btn').style.display='block';
+  document.getElementById('m-addnote-title').textContent='تعديل الملاحظة';
+  S.selNoteCol=n.col;
+  document.querySelectorAll('.ncolpick').forEach(c=>c.classList.toggle('sel',c.dataset.col===n.col));
+  openM('m-addnote');
+}
+let _pendDelNoteId=null;
+function openDelNote(id){_pendDelNoteId=id;pinTarget='note';pinBuf='';updatePinDots();document.getElementById('pin-err').textContent='';openM('m-pin');}
+function execDelNote(){
+  const id=_pendDelNoteId||document.getElementById('note-edit-id').value;
+  if(id)S.notes=S.notes.filter(x=>x.id!=id);
+  closeM('m-addnote');resetNoteForm();_pendDelNoteId=null;save();renderNotes();
+}
+
+function openDeposit(id){
+  const g=S.goals.find(x=>x.id===id);if(!g)return;
+  document.getElementById('deposit-goal-id').value=id;
+  document.getElementById('deposit-title').textContent='إضافة مبلغ لـ '+g.name;
+  document.getElementById('deposit-goal-icon').textContent=g.icon;
+  document.getElementById('deposit-goal-name').textContent=g.name;
+  document.getElementById('deposit-cur-val').textContent=fmt(g.current);
+  document.getElementById('deposit-target-val').textContent=fmt(g.target);
+  document.getElementById('deposit-amt').value='';
+  openM('m-deposit');
+}
+function setDepAmt(v){document.getElementById('deposit-amt').value=v;}
+function doDeposit(){
+  const id=document.getElementById('deposit-goal-id').value;
+  const amt=parseFloat(document.getElementById('deposit-amt').value);
+  if(!amt||amt<=0){alert('أدخل مبلغاً صحيحاً');return;}
+  const g=S.goals.find(x=>x.id==id);if(!g)return;
+  g.current=Math.min(g.target,g.current+amt);
+  closeM('m-deposit');save();renderSav();
+  // show success
+  setTimeout(()=>alert('✅ تمت إضافة '+fmt(amt)+' ر.س لهدف "'+g.name+'"'),100);
+}
+
+// ====== GOAL CRUD ======
+function saveGoal(){
+  const editId=document.getElementById('goal-edit-id').value;
+  const name=document.getElementById('goal-name').value.trim();
+  const target=parseFloat(document.getElementById('goal-target').value)||0;
+  const cur=parseFloat(document.getElementById('goal-cur').value)||0;
+  if(!name||target<=0)return;
+  if(editId){const g=S.goals.find(x=>x.id==editId);if(g){g.name=name;g.target=target;g.current=cur;}}
+  else S.goals.push({id:S.nid++,name,target,current:cur,icon:'🎯'});
+  closeM('m-addgoal');resetGoalForm();save();renderSav();
+}
+function resetGoalForm(){
+  document.getElementById('goal-edit-id').value='';
+  document.getElementById('goal-name').value='';
+  document.getElementById('goal-target').value='';
+  document.getElementById('goal-cur').value='';
+  document.getElementById('goal-del-btn').style.display='none';
+  document.getElementById('m-addgoal-title').textContent='هدف ادخار جديد';
+}
+function editGoal(id){
+  const g=S.goals.find(x=>x.id===id);if(!g)return;
+  document.getElementById('goal-edit-id').value=id;
+  document.getElementById('goal-name').value=g.name;
+  document.getElementById('goal-target').value=g.target;
+  document.getElementById('goal-cur').value=g.current;
+  document.getElementById('goal-del-btn').style.display='block';
+  document.getElementById('m-addgoal-title').textContent='تعديل الهدف';
+  openM('m-addgoal');
+}
+let _pendDelGoalId=null;
+function openDelGoal(id){_pendDelGoalId=id;pinTarget='goal';pinBuf='';updatePinDots();document.getElementById('pin-err').textContent='';openM('m-pin');}
+function execDelGoal(){
+  const id=_pendDelGoalId||document.getElementById('goal-edit-id').value;
+  if(id)S.goals=S.goals.filter(x=>x.id!=id);
+  closeM('m-addgoal');resetGoalForm();_pendDelGoalId=null;save();renderSav();
+}
+
+// also connect PIN modal del buttons in forms
+function reqPinDel(type){
+  if(type==='tx')pinTarget='tx';
+  else if(type==='task')pinTarget='task';
+  else if(type==='note')pinTarget='note';
+  else if(type==='goal')pinTarget='goal';
+  pinBuf='';updatePinDots();
+  document.getElementById('pin-err').textContent='';
+  openM('m-pin');
+}
+
+// ====== EXPORT EXCEL ======
+function getExportSections(){
+  return {
+    tx: document.getElementById('chk-tx')?.checked ?? true,
+    tasks: document.getElementById('chk-tasks')?.checked ?? true,
+    goals: document.getElementById('chk-goals')?.checked ?? true,
+    notes: document.getElementById('chk-notes')?.checked ?? true,
+  };
+}
+function exportExcel(){
+  try{
+    const sel=getExportSections();
+    const wb=XLSX.utils.book_new();
+    let hasSheet=false;
+    if(sel.tx){
+      const txData=[['النوع','التصنيف','الوصف','المبلغ','التاريخ'],...S.tx.map(t=>[t.type==='income'?'دخل':'مصروف',t.cat,t.desc,t.amount,t.date])];
+      XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(txData),'المعاملات');hasSheet=true;
+    }
+    if(sel.tasks){
+      const taskData=[['العنوان','الأولوية','التصنيف','الحالة'],...S.tasks.map(t=>[t.title,t.priority,t.cat,t.done?'مكتملة':'معلقة'])];
+      XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(taskData),'المهام');hasSheet=true;
+    }
+    if(sel.goals){
+      const goalData=[['الهدف','المستهدف','الحالي','النسبة'],...S.goals.map(g=>[g.name,g.target,g.current,Math.round(g.current/g.target*100)+'%'])];
+      XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(goalData),'الأهداف');hasSheet=true;
+    }
+    if(sel.notes){
+      const noteData=[['العنوان','المحتوى'],...S.notes.map(n=>[n.title,n.body])];
+      XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(noteData),'الملاحظات');hasSheet=true;
+    }
+    if(!hasSheet){alert('اختر قسماً واحداً على الأقل');return;}
+    XLSX.writeFile(wb,'hayati-'+new Date().toISOString().slice(0,10)+'.xlsx');
+  }catch(e){alert('حدث خطأ أثناء تصدير Excel: '+e.message);}
+}
+
+// ====== EXPORT PDF (print-based, full Arabic support) ======
+function exportPDF(){
+  const sel=getExportSections();
+  if(!sel.tx&&!sel.tasks&&!sel.goals&&!sel.notes){alert('اختر قسماً واحداً على الأقل');return;}
+  const {inc,exp,bal}=calcTotals();
+  const date=new Date().toLocaleDateString('ar-SA',{year:'numeric',month:'long',day:'numeric'});
+
+  let html=`<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8">
+  <title>تقرير حياتي</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:Tahoma,Arial,sans-serif;font-size:13px;color:#1a1c20;background:#fff;padding:24px 32px;direction:rtl;}
+    .header{text-align:center;margin-bottom:28px;padding-bottom:16px;border-bottom:2px solid #0D7A5F;}
+    .logo{font-size:32px;margin-bottom:6px;}
+    h1{font-size:22px;font-weight:700;color:#0D7A5F;margin-bottom:4px;}
+    .date{font-size:12px;color:#888;}
+    .section{margin-bottom:24px;}
+    .section-title{font-size:15px;font-weight:700;color:#0D7A5F;padding:8px 12px;background:#E6F5F0;border-radius:8px;margin-bottom:10px;border-right:4px solid #0D7A5F;}
+    .summary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:8px;}
+    .sum-box{padding:12px;border-radius:8px;text-align:center;border:1px solid #e2e5ec;}
+    .sum-box .lbl{font-size:11px;color:#666;margin-bottom:4px;}
+    .sum-box .val{font-size:18px;font-weight:700;}
+    .inc{background:#EBF5EB;}.inc .val{color:#2E7D32;}
+    .exp-box{background:#FDECEA;}.exp-box .val{color:#C0392B;}
+    .bal{background:#E6F5F0;}.bal .val{color:#0D7A5F;}
+    table{width:100%;border-collapse:collapse;font-size:12px;}
+    th{background:#0D7A5F;color:#fff;padding:8px 10px;text-align:right;font-weight:600;}
+    td{padding:7px 10px;border-bottom:1px solid #eee;text-align:right;}
+    tr:nth-child(even) td{background:#f9fafb;}
+    .tag{display:inline-block;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:600;}
+    .tag-inc{background:#EBF5EB;color:#1B5E20;}
+    .tag-exp{background:#FDECEA;color:#7B1A12;}
+    .tag-done{background:#EBF5EB;color:#1B5E20;}
+    .tag-pend{background:#FEF3E2;color:#6B3E00;}
+    .prog-wrap{background:#e2e5ec;border-radius:4px;height:8px;margin-top:4px;}
+    .prog-bar{background:#0D7A5F;border-radius:4px;height:8px;}
+    .goal-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #eee;}
+    .goal-row:last-child{border-bottom:none;}
+    .goal-icon{font-size:22px;}
+    .goal-info{flex:1;}
+    .goal-name{font-weight:600;font-size:13px;}
+    .goal-sub{font-size:11px;color:#888;margin-top:2px;}
+    .goal-pct{font-size:16px;font-weight:700;color:#0D7A5F;min-width:44px;text-align:left;}
+    .note-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+    .note-card{padding:12px;border-radius:8px;border:1px solid #e2e5ec;}
+    .note-title{font-weight:700;font-size:13px;margin-bottom:5px;}
+    .note-body{font-size:12px;color:#555;line-height:1.5;}
+    @media print{body{padding:10px 16px;}@page{margin:15mm;}}
+  </style></head><body>
+  <div class="header">
+    <div class="logo">💰</div>
+    <h1>تقرير حياتي</h1>
+    <div class="date">${date}</div>
+  </div>`;
+
+  if(sel.tx){
+    html+=`<div class="section">
+      <div class="section-title">💳 الملخص المالي</div>
+      <div class="summary-grid">
+        <div class="sum-box inc"><div class="lbl">إجمالي الدخل</div><div class="val">${fmt(inc)} ر.س</div></div>
+        <div class="sum-box exp-box"><div class="lbl">إجمالي المصروف</div><div class="val">${fmt(exp)} ر.س</div></div>
+        <div class="sum-box bal"><div class="lbl">الرصيد</div><div class="val">${fmt(bal)} ر.س</div></div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-title">💳 المعاملات</div>
+      <table><thead><tr><th>التاريخ</th><th>التصنيف</th><th>الوصف</th><th>المبلغ</th><th>النوع</th></tr></thead><tbody>
+      ${S.tx.slice().reverse().map(t=>`<tr>
+        <td>${t.date}</td>
+        <td>${t.cat}</td>
+        <td>${t.desc}</td>
+        <td style="font-weight:600;color:${t.type==='income'?'#2E7D32':'#C0392B'}">${t.type==='expense'?'-':'+'} ${fmt(t.amount)} ر.س</td>
+        <td><span class="tag ${t.type==='income'?'tag-inc':'tag-exp'}">${t.type==='income'?'دخل':'مصروف'}</span></td>
+      </tr>`).join('')}
+      </tbody></table>
+    </div>`;
+  }
+
+  if(sel.tasks){
+    html+=`<div class="section">
+      <div class="section-title">✅ المهام والالتزامات</div>
+      <table><thead><tr><th>المهمة</th><th>التصنيف</th><th>الأولوية</th><th>الحالة</th></tr></thead><tbody>
+      ${S.tasks.map(t=>`<tr>
+        <td>${t.done?'<span style="text-decoration:line-through;color:#aaa">'+t.title+'</span>':t.title}</td>
+        <td>${t.cat}</td>
+        <td>${t.priority}</td>
+        <td><span class="tag ${t.done?'tag-done':'tag-pend'}">${t.done?'مكتملة':'معلقة'}</span></td>
+      </tr>`).join('')}
+      </tbody></table>
+    </div>`;
+  }
+
+  if(sel.goals){
+    html+=`<div class="section">
+      <div class="section-title">🎯 أهداف الادخار</div>
+      ${S.goals.map(g=>{
+        const p=Math.min(100,Math.round(g.current/g.target*100));
+        return `<div class="goal-row">
+          <div class="goal-icon">${g.icon}</div>
+          <div class="goal-info">
+            <div class="goal-name">${g.name}</div>
+            <div class="goal-sub">${fmt(g.current)} ر.س من ${fmt(g.target)} ر.س — متبقي ${fmt(g.target-g.current)} ر.س</div>
+            <div class="prog-wrap"><div class="prog-bar" style="width:${p}%"></div></div>
+          </div>
+          <div class="goal-pct">${p}٪</div>
+        </div>`;
+      }).join('')}
+    </div>`;
+  }
+
+  if(sel.notes){
+    html+=`<div class="section">
+      <div class="section-title">📝 الملاحظات</div>
+      <div class="note-grid">
+      ${S.notes.map(n=>`<div class="note-card">
+        <div class="note-title">${n.title}</div>
+        <div class="note-body">${n.body}</div>
+      </div>`).join('')}
+      </div>
+    </div>`;
+  }
+
+  html+=`</body></html>`;
+
+  const pw=window.open('','_blank','width=800,height=900');
+  if(!pw){alert('السماح بالنوافذ المنبثقة لتصدير PDF');return;}
+  pw.document.write(html);
+  pw.document.close();
+  pw.onload=()=>{setTimeout(()=>{pw.print();},400);};
+}
+
+// ====== BACKUP / RESTORE ======
+function exportBackup(){
+  const data=JSON.parse(JSON.stringify(S));
+  data._backup=true;data._date=new Date().toISOString();
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='hayati-backup-'+new Date().toISOString().slice(0,10)+'.json';
+  a.click();
+}
+function importBackup(input){
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const data=JSON.parse(e.target.result);
+      if(!data._backup){alert('الملف غير صالح');return;}
+      if(!confirm('هل تريد استعادة البيانات؟ سيتم استبدال البيانات الحالية.'))return;
+      Object.assign(S,data);
+      save();applyTheme();renderAll();
+      alert('✅ تم استعادة البيانات بنجاح');
+    }catch(err){alert('خطأ في قراءة الملف');}
+    input.value='';
+  };
+  reader.readAsText(file);
+}
+
+// ====== COPY APP ======
+function copyAppWithData(){
+  const htmlContent=document.documentElement.outerHTML;
+  const dataScript=`<script>localStorage.setItem('hayati-v3',${JSON.stringify(JSON.stringify(S))});<\/script>`;
+  const finalHtml=htmlContent.replace('</body>',dataScript+'</body>');
+  downloadHtml(finalHtml,'hayati-with-data.html');
+}
+function copyAppClean(){
+  const htmlContent=document.documentElement.outerHTML;
+  downloadHtml(htmlContent,'hayati-clean.html');
+}
+function downloadHtml(content,filename){
+  const blob=new Blob([content],{type:'text/html;charset=utf-8'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=filename;
+  a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+}
+
+// ====== PWA SETUP ======
+(function(){
+  // Inject manifest dynamically (works from local file)
+  const manifest={
+    name:'حياتي - مدير المالية والمهام',
+    short_name:'حياتي',
+    description:'مدير الأمور المالية والمهام اليومية',
+    start_url:'.',
+    display:'standalone',
+    background_color:'#F0F2F5',
+    theme_color:'#0D7A5F',
+    lang:'ar',
+    dir:'rtl',
+    orientation:'portrait',
+    icons:[
+      {src:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="100" fill="%230D7A5F"/><text x="50%" y="58%" font-size="280" text-anchor="middle" dominant-baseline="middle">💰</text></svg>',sizes:'512x512',type:'image/svg+xml',purpose:'any maskable'}
+    ]
+  };
+  const blob=new Blob([JSON.stringify(manifest)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  document.getElementById('pwa-manifest').href=url;
+
+  // Register service worker (inline via blob)
+  if('serviceWorker' in navigator){
+    const swCode=`
+const CACHE='hayati-v1';
+const FILES=[self.location.href];
+self.addEventListener('install',e=>{
+  e.waitUntil(caches.open(CACHE).then(c=>c.addAll(FILES)).then(()=>self.skipWaiting()));
+});
+self.addEventListener('activate',e=>{
+  e.waitUntil(clients.claim());
+});
+self.addEventListener('fetch',e=>{
+  e.respondWith(
+    caches.match(e.request).then(r=>r||fetch(e.request).catch(()=>caches.match(e.request)))
+  );
+});`;
+    const swBlob=new Blob([swCode],{type:'application/javascript'});
+    const swUrl=URL.createObjectURL(swBlob);
+    navigator.serviceWorker.register(swUrl,{scope:'./'}).catch(()=>{});
+  }
+
+  // Show install prompt for Android/Chrome
+  let deferredPrompt=null;
+  window.addEventListener('beforeinstallprompt',e=>{
+    e.preventDefault();
+    deferredPrompt=e;
+    // Show install banner after login
+    setTimeout(()=>{
+      const banner=document.getElementById('install-banner');
+      if(banner && document.getElementById('main-app').style.display!=='none'){
+        banner.style.display='flex';
+      }
+    },2000);
+  });
+  window.addEventListener('appinstalled',()=>{
+    const banner=document.getElementById('install-banner');
+    if(banner) banner.style.display='none';
+    deferredPrompt=null;
+  });
+  window._installApp=function(){
+    if(deferredPrompt){
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then(()=>{deferredPrompt=null;});
+    }
+    const banner=document.getElementById('install-banner');
+    if(banner) banner.style.display='none';
+  };
+})();
+
+// ====== INIT ======
+initLogin();
+</script>
+</body>
+</html>
