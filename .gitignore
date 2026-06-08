@@ -1,0 +1,14 @@
+node_modules/
+.DS_Store
+*.jks
+*.p12
+*.p8
+*.p1
+*.pfx
+*.der
+*.mobileprovision
+*.orig.*
+web-build/
+dist/
+.env
+.env.local
