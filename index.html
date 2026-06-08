@@ -10,7 +10,7 @@
 <meta name="apple-mobile-web-app-title" content="حياتي">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0D7A5F">
-<link rel="manifest" id="pwa-manifest">
+<link rel="manifest" href="manifest.json">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
@@ -68,9 +68,23 @@ body{background:var(--bg-page);font-family:-apple-system,BlinkMacSystemFont,'Seg
 .icon-btn:hover{background:var(--bg-surf);}
 .hdr-actions{display:flex;gap:6px;align-items:center;}
 .bnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:var(--bg-card);border-top:1px solid var(--brd);display:flex;z-index:20;}
-.nitem{flex:1;display:flex;flex-direction:column;align-items:center;padding:10px 4px 16px;cursor:pointer;border:none;background:none;color:var(--txt3);font-size:10px;gap:3px;transition:color .2s;}
-.nitem i{font-size:22px;}
+.nitem{flex:1;display:flex;flex-direction:column;align-items:center;padding:10px 2px 16px;cursor:pointer;border:none;background:none;color:var(--txt3);font-size:9px;gap:3px;transition:color .2s;}
+.nitem i{font-size:20px;}
 .nitem.active{color:var(--acc);}
+/* Reports */
+.rep-tab{padding:7px 14px;border-radius:20px;border:1px solid var(--brd);background:var(--bg-card);font-size:12px;font-weight:500;color:var(--txt2);cursor:pointer;white-space:nowrap;font-family:inherit;transition:all .2s;}
+.rep-tab.active{background:var(--acc);color:#fff;border-color:var(--acc);}
+.rep-panel{padding-bottom:8px;}
+.stat-box{border-radius:12px;padding:14px 12px;display:flex;flex-direction:column;align-items:center;text-align:center;border:1px solid var(--brd);background:var(--bg-card);}
+.stat-ico{font-size:24px;margin-bottom:6px;}
+.stat-lbl{font-size:11px;color:var(--txt2);font-weight:500;margin-bottom:4px;}
+.stat-val{font-size:18px;font-weight:700;}
+.stat-sub{font-size:10px;color:var(--txt3);margin-top:3px;}
+.cat-rep-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--brd);}
+.cat-rep-row:last-child{border-bottom:none;}
+.cat-rep-bar{flex:1;height:8px;background:var(--brd);border-radius:4px;overflow:hidden;}
+.cat-rep-fill{height:100%;border-radius:4px;background:var(--acc);}
+.cat-rep-amt{font-size:12px;font-weight:600;color:var(--txt1);white-space:nowrap;min-width:80px;text-align:left;}
 .card{background:var(--bg-card);border-radius:14px;border:1px solid var(--brd);padding:14px 16px;margin:0 12px 10px;}
 .slbl{font-size:11px;font-weight:600;color:var(--txt3);text-transform:uppercase;letter-spacing:.6px;padding:14px 16px 6px;}
 .sbar{background:var(--acc);margin:12px;border-radius:16px;padding:18px 16px;}
@@ -272,6 +286,136 @@ body{background:var(--bg-page);font-family:-apple-system,BlinkMacSystemFont,'Seg
   <div id="notes-grid" style="padding:12px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px"></div>
 </div>
 
+<!-- REPORTS SCREEN -->
+<div id="s-reports" class="screen">
+  <div class="hdr">
+    <div class="hdr-title">التقارير والإحصائيات</div>
+  </div>
+
+  <!-- Filter tabs -->
+  <div style="display:flex;gap:8px;padding:12px 12px 4px;overflow-x:auto;">
+    <button class="rep-tab active" onclick="setRepTab('financial',this)">💰 المالية</button>
+    <button class="rep-tab" onclick="setRepTab('tasks',this)">✅ المهام</button>
+    <button class="rep-tab" onclick="setRepTab('savings',this)">🎯 الادخار</button>
+    <button class="rep-tab" onclick="setRepTab('summary',this)">📊 الإجمالي</button>
+  </div>
+
+  <!-- Financial Tab -->
+  <div id="rep-financial" class="rep-panel">
+    <div class="slbl">الإجماليات المالية</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 12px 10px">
+      <div class="stat-box" style="background:var(--acc-lt)">
+        <div class="stat-ico">💰</div>
+        <div class="stat-lbl">إجمالي الدخل</div>
+        <div class="stat-val" id="r-total-inc" style="color:var(--acc)">٠</div>
+        <div class="stat-sub" id="r-inc-count"></div>
+      </div>
+      <div class="stat-box" style="background:var(--red-lt)">
+        <div class="stat-ico">💸</div>
+        <div class="stat-lbl">إجمالي المصروف</div>
+        <div class="stat-val" id="r-total-exp" style="color:var(--red)">٠</div>
+        <div class="stat-sub" id="r-exp-count"></div>
+      </div>
+      <div class="stat-box" style="background:var(--blu-lt)">
+        <div class="stat-ico">🏦</div>
+        <div class="stat-lbl">صافي الرصيد</div>
+        <div class="stat-val" id="r-bal" style="color:var(--blu)">٠</div>
+        <div class="stat-sub" id="r-bal-sub"></div>
+      </div>
+      <div class="stat-box" style="background:var(--grn-lt)">
+        <div class="stat-ico">📈</div>
+        <div class="stat-lbl">نسبة الادخار</div>
+        <div class="stat-val" id="r-sav-pct" style="color:var(--grn)">٠٪</div>
+        <div class="stat-sub">من الدخل الكلي</div>
+      </div>
+    </div>
+
+    <div class="slbl">المصروف حسب التصنيف</div>
+    <div class="card" id="r-exp-by-cat"></div>
+
+    <div class="slbl">أعلى ٥ مصاريف</div>
+    <div class="card" id="r-top-exp"></div>
+
+    <div class="slbl">أعلى ٥ مصادر دخل</div>
+    <div class="card" id="r-top-inc"></div>
+  </div>
+
+  <!-- Tasks Tab -->
+  <div id="rep-tasks" class="rep-panel" style="display:none">
+    <div class="slbl">إجماليات المهام</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 12px 10px">
+      <div class="stat-box" style="background:var(--acc-lt)">
+        <div class="stat-ico">✅</div>
+        <div class="stat-lbl">مكتملة</div>
+        <div class="stat-val" id="r-tasks-done" style="color:var(--acc)">٠</div>
+      </div>
+      <div class="stat-box" style="background:var(--amb-lt)">
+        <div class="stat-ico">⏳</div>
+        <div class="stat-lbl">معلقة</div>
+        <div class="stat-val" id="r-tasks-pend" style="color:var(--amb)">٠</div>
+      </div>
+      <div class="stat-box" style="background:var(--red-lt)">
+        <div class="stat-ico">🔴</div>
+        <div class="stat-lbl">أولوية عالية</div>
+        <div class="stat-val" id="r-tasks-high" style="color:var(--red)">٠</div>
+      </div>
+      <div class="stat-box" style="background:var(--blu-lt)">
+        <div class="stat-ico">📊</div>
+        <div class="stat-lbl">نسبة الإنجاز</div>
+        <div class="stat-val" id="r-tasks-pct" style="color:var(--blu)">٠٪</div>
+      </div>
+    </div>
+
+    <div class="slbl">المهام حسب التصنيف</div>
+    <div class="card" id="r-tasks-by-cat"></div>
+
+    <div class="slbl">المهام حسب الأولوية</div>
+    <div class="card" id="r-tasks-by-pri"></div>
+  </div>
+
+  <!-- Savings Tab -->
+  <div id="rep-savings" class="rep-panel" style="display:none">
+    <div class="slbl">إجماليات الادخار</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 12px 10px">
+      <div class="stat-box" style="background:var(--acc-lt)">
+        <div class="stat-ico">💎</div>
+        <div class="stat-lbl">إجمالي المدخرات</div>
+        <div class="stat-val" id="r-sav-total" style="color:var(--acc)">٠</div>
+      </div>
+      <div class="stat-box" style="background:var(--prp-lt)">
+        <div class="stat-ico">🎯</div>
+        <div class="stat-lbl">عدد الأهداف</div>
+        <div class="stat-val" id="r-goals-count" style="color:var(--prp)">٠</div>
+      </div>
+      <div class="stat-box" style="background:var(--grn-lt)">
+        <div class="stat-ico">🏆</div>
+        <div class="stat-lbl">أهداف اكتملت</div>
+        <div class="stat-val" id="r-goals-done" style="color:var(--grn)">٠</div>
+      </div>
+      <div class="stat-box" style="background:var(--amb-lt)">
+        <div class="stat-ico">📉</div>
+        <div class="stat-lbl">المتبقي للأهداف</div>
+        <div class="stat-val" id="r-goals-rem" style="color:var(--amb)">٠</div>
+      </div>
+    </div>
+
+    <div class="slbl">تفاصيل كل هدف</div>
+    <div class="card" id="r-goals-detail"></div>
+  </div>
+
+  <!-- Summary Tab -->
+  <div id="rep-summary" class="rep-panel" style="display:none">
+    <div class="slbl">ملخص شامل</div>
+    <div class="card" id="r-summary-card"></div>
+
+    <div class="slbl">توزيع الإنفاق</div>
+    <div class="card" id="r-spend-dist"></div>
+
+    <div class="slbl">أبرز الإنجازات</div>
+    <div class="card" id="r-achievements"></div>
+  </div>
+</div>
+
 <!-- BACKUP SCREEN -->
 <div id="s-backup" class="screen">
   <div class="hdr"><div class="hdr-title">النسخ والتصدير</div></div>
@@ -337,6 +481,7 @@ body{background:var(--bg-page);font-family:-apple-system,BlinkMacSystemFont,'Seg
   <button class="nitem" onclick="goTab('sav',this)"><i class="ti ti-piggy-bank"></i><span>ادخار</span></button>
   <button class="nitem" onclick="goTab('tasks',this)"><i class="ti ti-checkbox"></i><span>مهام</span></button>
   <button class="nitem" onclick="goTab('notes',this)"><i class="ti ti-note"></i><span>ملاحظات</span></button>
+  <button class="nitem" onclick="goTab('reports',this)"><i class="ti ti-chart-bar"></i><span>تقارير</span></button>
   <button class="nitem" onclick="goTab('backup',this)"><i class="ti ti-database-export"></i><span>نسخ</span></button>
 </nav>
 
@@ -771,6 +916,7 @@ function goTab(name,el){
   document.querySelectorAll('.nitem').forEach(n=>n.classList.remove('active'));
   document.getElementById('s-'+name).classList.add('active');
   el.classList.add('active');
+  if(name==='reports') renderReports();
 }
 
 // ====== CATEGORY PICKERS ======
@@ -1315,55 +1461,262 @@ function downloadHtml(content,filename){
   setTimeout(()=>URL.revokeObjectURL(a.href),1000);
 }
 
-// ====== PWA SETUP ======
+// ====== REPORTS ======
+let currentRepTab='financial';
+
+function setRepTab(tab, el){
+  currentRepTab=tab;
+  document.querySelectorAll('.rep-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.rep-panel').forEach(p=>p.style.display='none');
+  document.getElementById('rep-'+tab).style.display='block';
+  renderRepTab(tab);
+}
+
+function renderRepTab(tab){
+  if(tab==='financial') renderRepFinancial();
+  else if(tab==='tasks') renderRepTasks();
+  else if(tab==='savings') renderRepSavings();
+  else if(tab==='summary') renderRepSummary();
+}
+
+function renderRepFinancial(){
+  const txList=S.tx;
+  const incList=txList.filter(t=>t.type==='income');
+  const expList=txList.filter(t=>t.type==='expense');
+  const totalInc=incList.reduce((a,t)=>a+t.amount,0);
+  const totalExp=expList.reduce((a,t)=>a+t.amount,0);
+  const bal=totalInc-totalExp;
+  const savPct=totalInc>0?Math.max(0,Math.round((bal/totalInc)*100)):0;
+
+  document.getElementById('r-total-inc').textContent=fmt(totalInc)+' ر.س';
+  document.getElementById('r-inc-count').textContent=ar(incList.length)+' معاملة';
+  document.getElementById('r-total-exp').textContent=fmt(totalExp)+' ر.س';
+  document.getElementById('r-exp-count').textContent=ar(expList.length)+' معاملة';
+  document.getElementById('r-bal').textContent=fmt(Math.abs(bal))+' ر.س';
+  document.getElementById('r-bal-sub').textContent=bal>=0?'فائض':'عجز';
+  document.getElementById('r-sav-pct').textContent=ar(savPct)+'٪';
+
+  // Expenses by category
+  const expByCat={};
+  expList.forEach(t=>{expByCat[t.cat]=(expByCat[t.cat]||0)+t.amount;});
+  const sortedCats=Object.entries(expByCat).sort((a,b)=>b[1]-a[1]);
+  const maxCat=sortedCats[0]?.[1]||1;
+  const catColors=['var(--acc)','var(--blu)','var(--amb)','var(--red)','var(--prp)','var(--grn)'];
+  document.getElementById('r-exp-by-cat').innerHTML = sortedCats.length ?
+    sortedCats.map(([cat,amt],i)=>{
+      const pct=Math.round((amt/totalExp)*100);
+      const barW=Math.round((amt/maxCat)*100);
+      return `<div class="cat-rep-row">
+        <div style="font-size:18px;width:28px;text-align:center">${ICONS[cat]||'📦'}</div>
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+            <span style="font-size:13px;font-weight:500;color:var(--txt1)">${cat}</span>
+            <span style="font-size:11px;color:var(--txt3)">${ar(pct)}٪</span>
+          </div>
+          <div class="cat-rep-bar"><div class="cat-rep-fill" style="width:${barW}%;background:${catColors[i%catColors.length]}"></div></div>
+        </div>
+        <div class="cat-rep-amt">${fmt(amt)} ر.س</div>
+      </div>`;
+    }).join('') : '<div class="empty-state">لا توجد مصاريف</div>';
+
+  // Top 5 expenses
+  const top5Exp=[...expList].sort((a,b)=>b.amount-a.amount).slice(0,5);
+  document.getElementById('r-top-exp').innerHTML = top5Exp.length ?
+    top5Exp.map(t=>`<div class="litem">
+      <div class="iico">${ICONS[t.cat]||'📦'}</div>
+      <div class="itxt"><div class="iname">${t.desc}</div><div class="isub">${t.cat} · ${t.date}</div></div>
+      <div class="iamt exp">-${fmt(t.amount)} ر.س</div>
+    </div>`).join('') : '<div class="empty-state">لا توجد بيانات</div>';
+
+  // Top 5 income
+  const top5Inc=[...incList].sort((a,b)=>b.amount-a.amount).slice(0,5);
+  document.getElementById('r-top-inc').innerHTML = top5Inc.length ?
+    top5Inc.map(t=>`<div class="litem">
+      <div class="iico">${ICONS[t.cat]||'💰'}</div>
+      <div class="itxt"><div class="iname">${t.desc}</div><div class="isub">${t.cat} · ${t.date}</div></div>
+      <div class="iamt inc">+${fmt(t.amount)} ر.س</div>
+    </div>`).join('') : '<div class="empty-state">لا توجد بيانات</div>';
+}
+
+function renderRepTasks(){
+  const done=S.tasks.filter(t=>t.done).length;
+  const pend=S.tasks.filter(t=>!t.done).length;
+  const high=S.tasks.filter(t=>t.priority==='عالية'&&!t.done).length;
+  const total=S.tasks.length;
+  const pct=total>0?Math.round((done/total)*100):0;
+
+  document.getElementById('r-tasks-done').textContent=ar(done);
+  document.getElementById('r-tasks-pend').textContent=ar(pend);
+  document.getElementById('r-tasks-high').textContent=ar(high);
+  document.getElementById('r-tasks-pct').textContent=ar(pct)+'٪';
+
+  // By category
+  const byCat={};
+  S.tasks.forEach(t=>{
+    if(!byCat[t.cat]) byCat[t.cat]={total:0,done:0};
+    byCat[t.cat].total++;
+    if(t.done) byCat[t.cat].done++;
+  });
+  const catEmojis={شخصي:'👤',مالي:'💰',عمل:'💼',صحة:'💊',التزام:'📋'};
+  document.getElementById('r-tasks-by-cat').innerHTML = Object.entries(byCat).length ?
+    Object.entries(byCat).map(([cat,v])=>{
+      const p=Math.round((v.done/v.total)*100);
+      return `<div class="cat-rep-row">
+        <div style="font-size:18px;width:28px;text-align:center">${catEmojis[cat]||'📋'}</div>
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+            <span style="font-size:13px;font-weight:500;color:var(--txt1)">${cat}</span>
+            <span style="font-size:11px;color:var(--txt3)">${ar(v.done)}/${ar(v.total)}</span>
+          </div>
+          <div class="cat-rep-bar"><div class="cat-rep-fill" style="width:${p}%;background:var(--acc)"></div></div>
+        </div>
+        <div class="cat-rep-amt">${ar(p)}٪</div>
+      </div>`;
+    }).join('') : '<div class="empty-state">لا توجد مهام</div>';
+
+  // By priority
+  const byPri={عالية:{total:0,done:0},متوسطة:{total:0,done:0},منخفضة:{total:0,done:0}};
+  S.tasks.forEach(t=>{
+    if(byPri[t.priority]){byPri[t.priority].total++;if(t.done)byPri[t.priority].done++;}
+  });
+  const priColors={عالية:'var(--red)',متوسطة:'var(--amb)',منخفضة:'var(--grn)'};
+  const priIco={عالية:'🔴',متوسطة:'🟡',منخفضة:'🟢'};
+  document.getElementById('r-tasks-by-pri').innerHTML =
+    Object.entries(byPri).filter(([,v])=>v.total>0).map(([pri,v])=>{
+      const p=Math.round((v.done/v.total)*100);
+      return `<div class="cat-rep-row">
+        <div style="font-size:18px;width:28px;text-align:center">${priIco[pri]}</div>
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+            <span style="font-size:13px;font-weight:500;color:var(--txt1)">${pri}</span>
+            <span style="font-size:11px;color:var(--txt3)">${ar(v.done)}/${ar(v.total)} مكتملة</span>
+          </div>
+          <div class="cat-rep-bar"><div class="cat-rep-fill" style="width:${p}%;background:${priColors[pri]}"></div></div>
+        </div>
+        <div class="cat-rep-amt">${ar(p)}٪</div>
+      </div>`;
+    }).join('') || '<div class="empty-state">لا توجد مهام</div>';
+}
+
+function renderRepSavings(){
+  const tot=S.goals.reduce((a,g)=>a+g.current,0);
+  const totTarget=S.goals.reduce((a,g)=>a+g.target,0);
+  const rem=totTarget-tot;
+  const completed=S.goals.filter(g=>g.current>=g.target).length;
+
+  document.getElementById('r-sav-total').textContent=fmt(tot)+' ر.س';
+  document.getElementById('r-goals-count').textContent=ar(S.goals.length);
+  document.getElementById('r-goals-done').textContent=ar(completed);
+  document.getElementById('r-goals-rem').textContent=fmt(rem)+' ر.س';
+
+  // Goals detail
+  const sorted=[...S.goals].sort((a,b)=>(b.current/b.target)-(a.current/a.target));
+  document.getElementById('r-goals-detail').innerHTML = sorted.length ?
+    sorted.map(g=>{
+      const p=Math.min(100,Math.round((g.current/g.target)*100));
+      const done=g.current>=g.target;
+      return `<div style="padding:12px 0;border-bottom:1px solid var(--brd)">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+          <div style="font-size:22px">${g.icon}</div>
+          <div style="flex:1">
+            <div style="font-size:14px;font-weight:500;color:var(--txt1)">${g.name}</div>
+            <div style="font-size:11px;color:var(--txt3);margin-top:1px">${fmt(g.current)} من ${fmt(g.target)} ر.س</div>
+          </div>
+          <span class="badge ${done?'bok':'binfo'}">${done?'✅ مكتمل':ar(p)+'٪'}</span>
+        </div>
+        <div class="prog-track"><div class="prog-fill" style="width:${p}%;background:${done?'var(--grn)':'var(--acc)'}"></div></div>
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--txt3);margin-top:4px">
+          <span>تم ادخار: ${fmt(g.current)} ر.س</span>
+          <span>${done?'اكتمل 🎉':'متبقي: '+fmt(g.target-g.current)+' ر.س'}</span>
+        </div>
+      </div>`;
+    }).join('') : '<div class="empty-state">لا توجد أهداف</div>';
+  // Remove last border
+  const detail=document.getElementById('r-goals-detail');
+  if(detail.lastElementChild) detail.lastElementChild.style.borderBottom='none';
+}
+
+function renderRepSummary(){
+  const {inc,exp,bal}=calcTotals();
+  const savPct=inc>0?Math.max(0,Math.round((bal/inc)*100)):0;
+  const tasksDone=S.tasks.filter(t=>t.done).length;
+  const tasksTotal=S.tasks.length;
+  const taskPct=tasksTotal>0?Math.round((tasksDone/tasksTotal)*100):0;
+  const savTotal=S.goals.reduce((a,g)=>a+g.current,0);
+  const yearGoal=S.yearlyGoal||25000;
+  const yearPct=Math.min(100,Math.round((savTotal/yearGoal)*100));
+
+  document.getElementById('r-summary-card').innerHTML=`
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:10px;background:var(--acc-lt);border-radius:10px">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:22px">💰</span>
+          <div><div style="font-size:13px;font-weight:600;color:var(--acc-txt)">الوضع المالي</div><div style="font-size:11px;color:var(--acc-txt);opacity:.8">${bal>=0?'فائض: '+fmt(bal)+' ر.س':'عجز: '+fmt(Math.abs(bal))+' ر.س'}</div></div>
+        </div>
+        <span class="badge ${bal>=0?'bok':'bdanger'}">${bal>=0?'ممتاز':'تحت المراجعة'}</span>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:10px;background:var(--blu-lt);border-radius:10px">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:22px">✅</span>
+          <div><div style="font-size:13px;font-weight:600;color:var(--blu-txt)">إنجاز المهام</div><div style="font-size:11px;color:var(--blu-txt);opacity:.8">${ar(tasksDone)} من ${ar(tasksTotal)} مهمة مكتملة</div></div>
+        </div>
+        <span class="badge binfo">${ar(taskPct)}٪</span>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:10px;background:var(--grn-lt);border-radius:10px">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:22px">🎯</span>
+          <div><div style="font-size:13px;font-weight:600;color:var(--grn-txt)">هدف الادخار السنوي</div><div style="font-size:11px;color:var(--grn-txt);opacity:.8">${fmt(savTotal)} من ${fmt(yearGoal)} ر.س</div></div>
+        </div>
+        <span class="badge bok">${ar(yearPct)}٪</span>
+      </div>
+    </div>`;
+
+  // Spending distribution
+  const expByCat={};
+  S.tx.filter(t=>t.type==='expense').forEach(t=>{expByCat[t.cat]=(expByCat[t.cat]||0)+t.amount;});
+  const sortedCats=Object.entries(expByCat).sort((a,b)=>b[1]-a[1]);
+  const colors=['var(--acc)','var(--blu)','var(--amb)','var(--red)','var(--prp)','var(--grn)','var(--txt3)','var(--brd2)'];
+  document.getElementById('r-spend-dist').innerHTML = sortedCats.length ?
+    sortedCats.map(([cat,amt],i)=>{
+      const pct=exp>0?Math.round((amt/exp)*100):0;
+      return `<div class="cat-rep-row">
+        <div style="width:12px;height:12px;border-radius:50%;background:${colors[i%colors.length]};flex-shrink:0"></div>
+        <div style="font-size:13px;font-weight:500;color:var(--txt1);flex:1">${cat}</div>
+        <div style="font-size:11px;color:var(--txt3);margin-left:8px">${ar(pct)}٪</div>
+        <div class="cat-rep-amt">${fmt(amt)} ر.س</div>
+      </div>`;
+    }).join('') : '<div class="empty-state">لا توجد مصاريف</div>';
+
+  // Achievements
+  const achievements=[];
+  if(bal>0) achievements.push({ico:'🏆',txt:'رصيدك إيجابي هذا الشهر',sub:'استمر في الادخار!'});
+  if(savPct>=20) achievements.push({ico:'💎',txt:'نسبة ادخار ممتازة '+ar(savPct)+'٪',sub:'تجاوزت الهدف المثالي'});
+  if(taskPct>=80) achievements.push({ico:'⭐',txt:'أنجزت '+ar(taskPct)+'٪ من مهامك',sub:'إنتاجية عالية!'});
+  if(S.goals.filter(g=>g.current>=g.target).length>0) achievements.push({ico:'🎯',txt:'أكملت هدف ادخار كامل',sub:'إنجاز رائع!'});
+  if(S.tx.filter(t=>t.type==='income').length>=3) achievements.push({ico:'💰',txt:'مصادر دخل متعددة',sub:'تنويع ممتاز'});
+  if(achievements.length===0) achievements.push({ico:'🚀',txt:'ابدأ رحلتك المالية',sub:'أضف بياناتك لرؤية إنجازاتك'});
+
+  document.getElementById('r-achievements').innerHTML=achievements.map(a=>`
+    <div class="litem">
+      <div class="iico" style="background:var(--acc-lt);font-size:20px">${a.ico}</div>
+      <div class="itxt"><div class="iname">${a.txt}</div><div class="isub">${a.sub}</div></div>
+    </div>`).join('');
+}
+
+function renderReports(){
+  renderRepTab(currentRepTab);
+}
 (function(){
-  // Inject manifest dynamically (works from local file)
-  const manifest={
-    name:'حياتي - مدير المالية والمهام',
-    short_name:'حياتي',
-    description:'مدير الأمور المالية والمهام اليومية',
-    start_url:'.',
-    display:'standalone',
-    background_color:'#F0F2F5',
-    theme_color:'#0D7A5F',
-    lang:'ar',
-    dir:'rtl',
-    orientation:'portrait',
-    icons:[
-      {src:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="100" fill="%230D7A5F"/><text x="50%" y="58%" font-size="280" text-anchor="middle" dominant-baseline="middle">💰</text></svg>',sizes:'512x512',type:'image/svg+xml',purpose:'any maskable'}
-    ]
-  };
-  const blob=new Blob([JSON.stringify(manifest)],{type:'application/json'});
-  const url=URL.createObjectURL(blob);
-  document.getElementById('pwa-manifest').href=url;
-
-  // Register service worker (inline via blob)
+  // Register service worker
   if('serviceWorker' in navigator){
-    const swCode=`
-const CACHE='hayati-v1';
-const FILES=[self.location.href];
-self.addEventListener('install',e=>{
-  e.waitUntil(caches.open(CACHE).then(c=>c.addAll(FILES)).then(()=>self.skipWaiting()));
-});
-self.addEventListener('activate',e=>{
-  e.waitUntil(clients.claim());
-});
-self.addEventListener('fetch',e=>{
-  e.respondWith(
-    caches.match(e.request).then(r=>r||fetch(e.request).catch(()=>caches.match(e.request)))
-  );
-});`;
-    const swBlob=new Blob([swCode],{type:'application/javascript'});
-    const swUrl=URL.createObjectURL(swBlob);
-    navigator.serviceWorker.register(swUrl,{scope:'./'}).catch(()=>{});
+    navigator.serviceWorker.register('sw.js').catch(()=>{});
   }
-
   // Show install prompt for Android/Chrome
   let deferredPrompt=null;
   window.addEventListener('beforeinstallprompt',e=>{
     e.preventDefault();
     deferredPrompt=e;
-    // Show install banner after login
     setTimeout(()=>{
       const banner=document.getElementById('install-banner');
       if(banner && document.getElementById('main-app').style.display!=='none'){
